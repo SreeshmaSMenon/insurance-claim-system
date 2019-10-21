@@ -2,7 +2,6 @@ package com.hcl.insuranceclaimsystem.controller;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.hcl.insuranceclaimsystem.dto.ClaimDetailsResponse;
 import com.hcl.insuranceclaimsystem.dto.HospitalDetails;
 import com.hcl.insuranceclaimsystem.exception.ClaimsNotFoundException;
@@ -19,13 +17,18 @@ import com.hcl.insuranceclaimsystem.exception.CommonException;
 import com.hcl.insuranceclaimsystem.exception.UserNotFoundException;
 import com.hcl.insuranceclaimsystem.service.ClaimService;
 import com.hcl.insuranceclaimsystem.util.InsuranceClaimSystemConstants;
-
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import com.hcl.insuranceclaimsystem.dto.ClaimEntryInput;
+import com.hcl.insuranceclaimsystem.dto.ClaimEntryOutput;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class contains have the method for get List of claims by the userId.
  * 
  * @author KiruthikaK
+ * @author Sairam
+ * 
  * @since 2019/10/21
  *
  */
@@ -87,4 +90,19 @@ public class ClaimController {
 		return new ResponseEntity<>(statusList, HttpStatus.OK);
 
 	}
+
+	/**
+	 * claimEntry is create the clime with required details
+	 * 
+	 * @param claimEntryInput
+	 * @return ClaimEntryOutput
+	 * @throws CommonException
+	 */
+	@PostMapping(value = "/claims")
+	public ResponseEntity<ClaimEntryOutput> claimEntry(@RequestBody ClaimEntryInput claimEntryInput)
+			throws CommonException {
+		log.info("ClaimController --->claimEntry");
+		return ResponseEntity.status(HttpStatus.OK).body(claimService.claimEntry(claimEntryInput));
+	}
+
 }

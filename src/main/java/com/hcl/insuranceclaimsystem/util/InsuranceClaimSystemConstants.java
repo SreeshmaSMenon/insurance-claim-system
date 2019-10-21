@@ -48,7 +48,7 @@ public class InsuranceClaimSystemConstants {
 	public static final String AILMENT_DEBUG_END_SERVICE = "End processing of getAllAilment() in service";
 	public static final String CLAIM_INFO_START_SERVICE = "Start processing of getClaims  in service";
 	public static final String CLAIM_INFO_END_SERVICE = "End processing of getClaims in service";
-	public static final String HOSPITAL_LIST_EMPTY = "hospital list is empty";
-	
+	public static final String HOSPITAL_LIST_EMPTY = "hospital list is empty";	
+	public static final String CLAIM_ENTRY_SUCCSES = "claim enterd succsesfully";
 
 }

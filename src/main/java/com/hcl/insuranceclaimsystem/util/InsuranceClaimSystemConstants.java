@@ -24,5 +24,13 @@ public class InsuranceClaimSystemConstants {
 	public static final String UPDATED = "updated successfully";
 	public static final String USER_ID_NULL = "userId should not be null";
 	public static final String USER_ID_EMPTY = "userId should not be empty";
+	public static final String CLAIM_INFO_START_CONTROLLER = "Start processing of login()  in controller";
+	public static final String CLAIM_INFO_END_CONTROLLER = "End processing of login() in controller";
+	public static final String CLAIM_LIST_EMPTY = "claim list is empty";
+	public static final String FIRST_LEVEL_APPROVER = "FIRST_LEVEL_APPROVER";
+	public static final String PENDING = "PENDING";
+	public static final String SECOND_LEVEL_APPROVER = "SECOND_LEVEL_APPROVER";
+	public static final String FIRST_LEVEL_APPROVED = "FIRST_LEVEL_APPROVED";
+	
 
 }

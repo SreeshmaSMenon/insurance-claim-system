@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import com.hcl.insuranceclaimsystem.dto.ClaimApproveRequest;
 import com.hcl.insuranceclaimsystem.entity.Claim;
 import com.hcl.insuranceclaimsystem.entity.ClaimDetail;
-import com.hcl.insuranceclaimsystem.entity.User;
 import com.hcl.insuranceclaimsystem.exception.UserNotFoundException;
 import com.hcl.insuranceclaimsystem.repository.ClaimDetailRepository;
 import com.hcl.insuranceclaimsystem.repository.ClaimRepository;
@@ -46,10 +45,10 @@ public class UserServiceImpl implements UserService {
 			throws UserNotFoundException {
 		log.info(InsuranceClaimSystemConstants.APPROVE_DEBUG_START_SERVICE);
 		ClaimDetail claimDetail = new ClaimDetail();
-		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new UserNotFoundException(InsuranceClaimSystemConstants.USER_NOT_FOUND));
-		Optional<String> role = userRepository.getUserRole(user.getRoleId());
-		if (role.isPresent()) {
+		Optional<String> role = userRepository.getUserRole(userId);
+		if (!role.isPresent()) {
+			throw new UserNotFoundException(InsuranceClaimSystemConstants.USER_NOT_FOUND);
+		}else {
 			Optional<Claim> claimOptional = claimRepository.findById(claimApproveRequest.getClaimId());
 			String status = "";
 			if (claimOptional.isPresent() ) {

@@ -8,14 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hcl.insuranceclaimsystem.dto.ClaimApproveRequest;
 import com.hcl.insuranceclaimsystem.dto.CommonResponse;
+import com.hcl.insuranceclaimsystem.entity.ClaimDetail;
 import com.hcl.insuranceclaimsystem.exception.UserException;
 import com.hcl.insuranceclaimsystem.exception.UserNotFoundException;
 import com.hcl.insuranceclaimsystem.service.UserService;
@@ -32,8 +35,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/api/users")
+@CrossOrigin(allowedHeaders = { "*", "*/" }, origins = { "*", "*/" })
 public class UserController {
-
+	
 	@Autowired
 	UserService userService;
 
@@ -46,20 +50,20 @@ public class UserController {
 	  * @throws UserException
 	  * @throws UserNotFoundException 
 	  */
-	@PostMapping("/{userId}/claims")
+	@PutMapping("/{userId}/claims")
 	 public ResponseEntity<CommonResponse> approveClaim(@Valid @RequestBody ClaimApproveRequest claimApproveRequest,@PathVariable("userId") Integer userId,BindingResult bindingResult) throws UserException, UserNotFoundException{
 		 log.info(InsuranceClaimSystemConstants.APPROVE_DEBUG_START_CONTROLLER);
 		 if(bindingResult.hasErrors()) {
 			 throw new UserException(bindingResult.getFieldError().getField() + " " + bindingResult.getFieldError().getDefaultMessage());
 		 }
 		 CommonResponse commonResponse=new CommonResponse();
-		 Optional<String>updateStatus= userService.approveClaim(userId,claimApproveRequest);
-		 if(updateStatus.isPresent() && updateStatus.get().equals(InsuranceClaimSystemConstants.SUCCESS)){
+		 Optional<ClaimDetail>claimDetailOptional= userService.approveClaim(userId,claimApproveRequest);
+		 if(claimDetailOptional.isPresent()){
 			 commonResponse.setStatusCode(HttpStatus.OK.value());
 			 commonResponse.setStatusMessage(InsuranceClaimSystemConstants.SUCCESS);
 		 }
 		 log.info(InsuranceClaimSystemConstants.APPROVE_DEBUG_END_CONTROLLER);
-		 return new ResponseEntity<CommonResponse>(HttpStatus.OK);
+		 return new ResponseEntity<>(commonResponse,HttpStatus.OK);
 	 }
 
 }

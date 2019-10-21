@@ -35,5 +35,15 @@ public class InsuranceClaimSystemConstants {
 	public static final String PENDING = "PENDING";
 	public static final String SECOND_LEVEL_APPROVER = "SECOND_LEVEL_APPROVER";
 	public static final String FIRST_LEVEL_APPROVED = "FIRST_LEVEL_APPROVED";
+	public static final String SECOND_LEVEL_APPROVED = "SECOND_LEVEL_APPROVED";
+	public static final String FIRST_LEVEL_REJECTED = "FIRST_LEVEL_REJECTED ";
+	public static final String SECOND_LEVEL_REJECTED  = "SECOND_LEVEL_REJECTED ";
+	public static final String APPROVE = "APPROVE";
+	public static final String REJECT = "REJECT";
+	public static final String APPROVED = "APPROVED";
+	public static final String REJECTED = "REJECTED";
+
+
+
 
 }

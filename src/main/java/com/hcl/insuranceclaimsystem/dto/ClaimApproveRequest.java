@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ClaimApproveRequest {
-  @NotEmpty
+  
   private Integer claimId;
   @NotEmpty
   private String claimStatus;

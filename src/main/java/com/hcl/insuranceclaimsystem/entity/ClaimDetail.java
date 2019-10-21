@@ -1,6 +1,7 @@
 package com.hcl.insuranceclaimsystem.entity;
 
 
+import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,4 +20,5 @@ public class ClaimDetail {
 	private Integer approverId;
 	private String approvalStatus;
 	private String comments;
+	private LocalDateTime approvalDate;
 }

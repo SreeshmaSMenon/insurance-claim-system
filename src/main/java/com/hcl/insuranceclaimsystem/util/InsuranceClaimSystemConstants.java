@@ -24,5 +24,9 @@ public class InsuranceClaimSystemConstants {
 	public static final String UPDATED = "updated successfully";
 	public static final String USER_ID_NULL = "userId should not be null";
 	public static final String USER_ID_EMPTY = "userId should not be empty";
+	public static final String APPROVE_DEBUG_START_CONTROLLER = "Start processing of login()  in controller";
+	public static final String APPROVE_DEBUG_END_CONTROLLER = "End processing of login() in controller";
+	public static final String APPROVE_DEBUG_START_SERVICE = "Start processing of loginn() in service";
+	public static final String APPROVE_DEBUG_END_SERVICE = "End processing of login() in service";
 
 }

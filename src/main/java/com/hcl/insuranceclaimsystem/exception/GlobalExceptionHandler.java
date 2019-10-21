@@ -35,7 +35,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<>(errorResponse, HttpStatus.OK);
 	}
 
-
+	@ExceptionHandler(ClaimsNotFoundException.class)
+	public ResponseEntity<ErrorResponse> bindExceptionHandler(ClaimsNotFoundException exception, WebRequest request) {
+		ErrorResponse errorResponse = new ErrorResponse(exception.getMessage(), HttpStatus.NOT_FOUND.value(),
+				request.getDescription(false));
+		return new ResponseEntity<>(errorResponse, HttpStatus.OK);
+	}
 
 	
 }

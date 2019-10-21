@@ -34,7 +34,14 @@ public class UserServiceImpl implements UserService{
 	public Optional<String> approveClaim(Integer userId,ClaimApproveRequest claimApproveRequest) throws UserNotFoundException {
 		 log.info(InsuranceClaimSystemConstants.APPROVE_DEBUG_START_SERVICE);
 		 User user=userRepository.findById(userId).orElseThrow(()->new UserNotFoundException(InsuranceClaimSystemConstants.USER_NOT_FOUND));
-		 
+		 Optional<String> role=userRepository.getUserRole(user.getRoleId());
+		 if(role.isPresent()) {
+			 if(role.equals("FIRST_LEVEL_APPROVER")) {
+				 
+			 }else if(role.equals("FIRST_LEVEL_APPROVER")) {
+				 
+			 }
+		 }
 		 log.info(InsuranceClaimSystemConstants.APPROVE_DEBUG_END_SERVICE);
 		return null;
 	}

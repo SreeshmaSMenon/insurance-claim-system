@@ -1,8 +1,12 @@
 package com.hcl.insuranceclaimsystem.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import com.hcl.insuranceclaimsystem.entity.AilmentDetail;
+import java.util.Optional;
 
-public interface AilmentRepository extends JpaRepository<AilmentDetail, Integer> {
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+import com.hcl.insuranceclaimsystem.entity.Ailment;
+@Repository
+public interface AilmentRepository extends JpaRepository<Ailment, Integer> {
+	public Optional<Ailment> findByAilmentName(String ailment);
 
 }

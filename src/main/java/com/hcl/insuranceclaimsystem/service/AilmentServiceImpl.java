@@ -3,12 +3,11 @@ package com.hcl.insuranceclaimsystem.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.hcl.insuranceclaimsystem.dto.AilmentData;
-import com.hcl.insuranceclaimsystem.entity.AilmentDetail;
+import com.hcl.insuranceclaimsystem.entity.Ailment;
 import com.hcl.insuranceclaimsystem.repository.AilmentRepository;
 import com.hcl.insuranceclaimsystem.util.InsuranceClaimSystemConstants;
 
@@ -25,8 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AilmentServiceImpl implements AilmentService {
 	
 	@Autowired
-	AilmentRepository ailmentRepository;
-
+    AilmentRepository ailmentRepository;
 	/**
 	 * This method will retrieve all the ailment available from database.
 	 * @return Optional<List<AilmentData>>
@@ -35,7 +33,7 @@ public class AilmentServiceImpl implements AilmentService {
 	public Optional<List<AilmentData>> getAllAilment() {
 		log.info(InsuranceClaimSystemConstants.AILMENT_DEBUG_START_SERVICE);
 		List<AilmentData> ailmentList=new ArrayList<>();
-		List<AilmentDetail> ailmentDetails=ailmentRepository.findAll();
+		List<Ailment> ailmentDetails=ailmentRepository.findAll();
 		ailmentDetails.forEach(ailmentDetail->{
 			AilmentData ailmentData=new AilmentData();
 			BeanUtils.copyProperties(ailmentDetail, ailmentData);

@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.hcl.insuranceclaimsystem.dto.ClaimDetailsResponse;
 import com.hcl.insuranceclaimsystem.dto.HospitalDetails;
+import com.hcl.insuranceclaimsystem.entity.Ailment;
 import com.hcl.insuranceclaimsystem.entity.Claim;
 import com.hcl.insuranceclaimsystem.entity.HospitalDetail;
 import com.hcl.insuranceclaimsystem.exception.UserNotFoundException;
+import com.hcl.insuranceclaimsystem.repository.AilmentRepository;
 import com.hcl.insuranceclaimsystem.repository.ClaimDetailRepository;
 import com.hcl.insuranceclaimsystem.repository.ClaimRepository;
 import com.hcl.insuranceclaimsystem.repository.HospitalDetailRepository;
@@ -25,11 +27,11 @@ import com.hcl.insuranceclaimsystem.dto.ClaimEntryOutput;
 import com.hcl.insuranceclaimsystem.entity.Insurance;
 import com.hcl.insuranceclaimsystem.exception.CommonException;
 import com.hcl.insuranceclaimsystem.repository.InsuranceRepository;
-
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class contains the method for get list of claims based on the userId.
+ * 
  * @author KiruthikaK
  * @author sairam
  * @since 2019/10/21
@@ -48,6 +50,8 @@ public class ClaimServiceImpl implements ClaimService {
 	ClaimDetailRepository claimDetailRepository;
 	@Autowired
 	InsuranceRepository insuranceRepository;
+	@Autowired
+	AilmentRepository ailmentRepository;
 
 	/**
 	 * This method for get the all claims for the login user based on the roles.
@@ -106,40 +110,41 @@ public class ClaimServiceImpl implements ClaimService {
 	public List<String> trackClaim(Integer claimId) {
 		return claimDetailRepository.findByClaimId(claimId);
 	}
-		
 
-		/**
-		 * claim entry will create the claim with required details
-		 * 
-		 * @param ClaimEntryInput
-		 * @return ClaimEntryOutput
-		 * @throws CommonException
-		 */
-		@Override
-		public ClaimEntryOutput claimEntry(ClaimEntryInput claimEntryInput) throws CommonException {
+	/**
+	 * claim entry will create the claim with required details
+	 * 
+	 * @param ClaimEntryInput
+	 * @return ClaimEntryOutput
+	 * @throws CommonException
+	 */
+	@Override
+	public ClaimEntryOutput claimEntry(ClaimEntryInput claimEntryInput) throws CommonException {
 
-			log.info("ClaimServiceImpl-->ClaimEntryOutput entry");
-			log.info("records hospitalName:{} ", claimEntryInput.getHospitalName());
-			Optional<Insurance> insuranceOptional = insuranceRepository.findById(claimEntryInput.getInsuranceNumber());
-			if (!insuranceOptional.isPresent())
-				throw new CommonException("invalid insurance Number");
-			if (claimEntryInput.getAdmissionDate().isAfter(claimEntryInput.getDischargeDate()))
-				throw new CommonException("admission uplo");
-			if (claimEntryInput.getTotalClaimAmount() < 0)
-				throw new CommonException("invalid deatils");
-
-			Claim claim = new Claim();
-			BeanUtils.copyProperties(claimEntryInput, claim);
-			claim.setClaimDate(LocalDateTime.now());
-			claimRepository.save(claim);
-
-			ClaimEntryOutput claimEntryOutput = new ClaimEntryOutput();
-			claimEntryOutput.setClaimId(claim.getClaimId());
-			claimEntryOutput.setMessage(CLAIM_ENTRY_SUCCSES);
-			claimEntryOutput.setStatusCode(HttpStatus.OK.value());
-			log.info("ClaimServiceImpl-->ClaimEntryOutput ");
-			return claimEntryOutput;
+		log.info("ClaimServiceImpl-->ClaimEntryOutput entry");
+		log.info("records hospitalName:{} ", claimEntryInput.getHospitalName());
+		Optional<Insurance> insuranceOptional = insuranceRepository.findById(claimEntryInput.getInsuranceNumber());
+		if (!insuranceOptional.isPresent())
+			throw new CommonException("invalid insurance Number");
+		if (claimEntryInput.getAdmissionDate().isAfter(claimEntryInput.getDischargeDate()))
+			throw new CommonException("admission uplo");
+		if (claimEntryInput.getTotalClaimAmount() < 0)
+			throw new CommonException("invalid deatils");
+		Optional<Ailment> ailmentOptional = ailmentRepository.findByAilmentName(claimEntryInput.getAilmentNature());
+		if (!ailmentOptional.isPresent()) {
+			throw new CommonException("Ailment Not Found");
 		}
+		Claim claim = new Claim();
+		BeanUtils.copyProperties(claimEntryInput, claim);
+		claim.setClaimDate(LocalDateTime.now());
+		claimRepository.save(claim);
 
-	
+		ClaimEntryOutput claimEntryOutput = new ClaimEntryOutput();
+		claimEntryOutput.setClaimId(claim.getClaimId());
+		claimEntryOutput.setMessage(CLAIM_ENTRY_SUCCSES);
+		claimEntryOutput.setStatusCode(HttpStatus.OK.value());
+		log.info("ClaimServiceImpl-->ClaimEntryOutput ");
+		return claimEntryOutput;
+	}
+
 }

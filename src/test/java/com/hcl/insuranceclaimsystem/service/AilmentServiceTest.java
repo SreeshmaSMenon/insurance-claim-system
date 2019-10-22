@@ -1,11 +1,9 @@
 package com.hcl.insuranceclaimsystem.service;
 
 import static org.junit.Assert.assertNotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import com.hcl.insuranceclaimsystem.dto.AilmentData;
-import com.hcl.insuranceclaimsystem.entity.AilmentDetail;
+import com.hcl.insuranceclaimsystem.entity.Ailment;
 import com.hcl.insuranceclaimsystem.repository.AilmentRepository;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -23,18 +21,16 @@ public class AilmentServiceTest {
 	AilmentRepository ailmentRepository;
 	@InjectMocks
 	AilmentServiceImpl ailmentServiceImpl;
-	List<AilmentDetail> ailmentList;
+	List<Ailment> ailmentList;
 
 	@Before
 	public void setup() {
 		ailmentList = new ArrayList<>();
-		AilmentDetail ailmentDetail = new AilmentDetail();
-		ailmentDetail.setAilmentDetailId(1);
-		ailmentDetail.setNatureOfAilment("dengue");
-		ailmentDetail.setEligibleAmount(100000.0);
-		ailmentList.add(ailmentDetail);
+		Ailment ailment = new Ailment();
+		ailment.setAilmentId(1);
+		ailment.setAilmentName("Heart attack");
+		ailmentList.add(ailment);
 	}
-
 	@Test
 	public void testGetAllAilment() {
 		Mockito.when(ailmentRepository.findAll()).thenReturn(ailmentList);

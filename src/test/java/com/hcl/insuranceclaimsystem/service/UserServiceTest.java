@@ -28,6 +28,7 @@ public class UserServiceTest {
 	ClaimRepository claimRepository;
 	@Mock
 	ClaimDetailRepository claimDetailRepository;
+	
 	@InjectMocks
 	UserServiceImpl userServiceImpl;
 	ClaimApproveRequest claimApproveRequest;
@@ -100,4 +101,17 @@ public class UserServiceTest {
 		Optional<ClaimDetail>claimDetailOptional=userServiceImpl.approveClaim(1, claimApproveRequest);
 		assertNotNull(claimDetailOptional);
 	}
+	
+	@Test
+	public void testEligibleAmount() throws UserNotFoundException {
+		claimApproveRequest.setClaimStatus("APPROVE");
+		Mockito.when(userRepository.getUserRole(Mockito.anyInt())).thenReturn(Optional.of("FIRST_LEVEL_APPROVER"));
+		Mockito.when(claimRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(claim));
+		Mockito.when(claimRepository.getEligibleamount(Mockito.anyInt())).thenReturn(Optional.of(30000.0));
+		Mockito.when(claimRepository.updateStatus(Mockito.any(), Mockito.anyInt())).thenReturn(1);
+		Mockito.when(claimDetailRepository.save(Mockito.any())).thenReturn(claimDetail);
+		Optional<ClaimDetail>claimDetailOptional=userServiceImpl.approveClaim(1, claimApproveRequest);
+		assertNotNull(claimDetailOptional);
+	}
+	
 }

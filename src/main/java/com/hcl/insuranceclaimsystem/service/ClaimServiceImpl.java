@@ -130,7 +130,7 @@ public class ClaimServiceImpl implements ClaimService {
 			throw new CommonException("admission uplo");
 		if (claimEntryInput.getTotalClaimAmount() < 0)
 			throw new CommonException("invalid deatils");
-		Optional<Ailment> ailmentOptional = ailmentRepository.findByAilmentName(claimEntryInput.getAilmentNature());
+		Optional<Ailment> ailmentOptional = ailmentRepository.findByNatureOfAilment(claimEntryInput.getAilmentNature());
 		if (!ailmentOptional.isPresent()) {
 			throw new CommonException("Ailment Not Found");
 		}

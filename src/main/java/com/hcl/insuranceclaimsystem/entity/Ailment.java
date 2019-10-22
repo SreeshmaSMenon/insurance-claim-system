@@ -16,5 +16,5 @@ public class Ailment {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer ailmentId;
-	private String ailmentName;
+	private String natureOfAilment;
 }

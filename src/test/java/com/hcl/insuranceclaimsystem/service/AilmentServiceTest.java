@@ -28,7 +28,7 @@ public class AilmentServiceTest {
 		ailmentList = new ArrayList<>();
 		Ailment ailment = new Ailment();
 		ailment.setAilmentId(1);
-		ailment.setAilmentName("Heart attack");
+		ailment.setNatureOfAilment("Heart attack");
 		ailmentList.add(ailment);
 	}
 	@Test

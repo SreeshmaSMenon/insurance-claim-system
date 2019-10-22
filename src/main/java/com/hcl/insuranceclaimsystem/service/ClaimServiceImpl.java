@@ -118,10 +118,7 @@ public class ClaimServiceImpl implements ClaimService {
 	@Transactional
 	public List<String> trackClaim(Integer claimId) {
 		log.info(InsuranceClaimSystemConstants.TRACK_STATUS_INFO_START_SERVICE);
-		List<String> statusList=new ArrayList<>();
-		statusList = claimDetailRepository.findByClaimId(claimId);
-		log.info(InsuranceClaimSystemConstants.TRACK_STATUS_INFO_END_SERVICE);
-		return statusList;
+		return claimDetailRepository.findByClaimId(claimId);
 	}
 
 	@Value("${file.upload-dir}")

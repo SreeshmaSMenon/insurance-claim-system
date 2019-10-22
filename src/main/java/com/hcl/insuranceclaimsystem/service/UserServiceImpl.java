@@ -48,34 +48,36 @@ public class UserServiceImpl implements UserService {
 		Optional<String> role = userRepository.getUserRole(userId);
 		if (!role.isPresent()) {
 			throw new UserNotFoundException(InsuranceClaimSystemConstants.USER_NOT_FOUND);
-		}else {
-			Optional<Claim> claimOptional = claimRepository.findById(claimApproveRequest.getClaimId());
-			String status = "";
-			if (claimOptional.isPresent() ) {
-				if (role.get().equals(InsuranceClaimSystemConstants.FIRST_LEVEL_APPROVER) &&  claimApproveRequest.getClaimStatus().equals(InsuranceClaimSystemConstants.APPROVE)) {
-					status = InsuranceClaimSystemConstants.FIRST_LEVEL_APPROVED;
-					Optional<Double> eligibleAmount=claimRepository.getEligibleamount(claimApproveRequest.getClaimId());
-					if(eligibleAmount.isPresent()&&claimOptional.get().getTotalClaimAmount()>eligibleAmount.get()) {
-						status = InsuranceClaimSystemConstants.SECOND_LEVEL_APPROVED;
-					}
-				}else if (role.get().equals(InsuranceClaimSystemConstants.FIRST_LEVEL_APPROVER) &&  claimApproveRequest.getClaimStatus().equals(InsuranceClaimSystemConstants.REJECT)) {
-					status = InsuranceClaimSystemConstants.FIRST_LEVEL_REJECTED;
-				}
-				else if (role.get().equals(InsuranceClaimSystemConstants.SECOND_LEVEL_APPROVER)&&  claimApproveRequest.getClaimStatus().equals(InsuranceClaimSystemConstants.APPROVE)) {
-					status = InsuranceClaimSystemConstants.SECOND_LEVEL_APPROVED;
-				}else if (role.get().equals(InsuranceClaimSystemConstants.SECOND_LEVEL_APPROVER)&&  claimApproveRequest.getClaimStatus().equals(InsuranceClaimSystemConstants.REJECT)) {
-					status = InsuranceClaimSystemConstants.SECOND_LEVEL_REJECTED;
-				}
-				claimRepository.updateStatus(status, claimOptional.get().getClaimId());
-				claimDetail.setApprovalDate(LocalDateTime.now());
-				claimDetail.setClaimId(claimOptional.get().getClaimId());
-				claimDetail.setApprovalStatus(status);
-				claimDetail.setApproverId(userId);
-				claimDetail.setComments(claimApproveRequest.getComments());
-				claimDetail=claimDetailRepository.save(claimDetail);
-			}
-			
 		}
+		Optional<Claim> claimOptional = claimRepository.findById(claimApproveRequest.getClaimId());
+		String status = "";
+		if (claimOptional.isPresent()) {
+			if (role.get().equals(InsuranceClaimSystemConstants.FIRST_LEVEL_APPROVER)
+					&& claimApproveRequest.getClaimStatus().equals(InsuranceClaimSystemConstants.APPROVE)) {
+				status = InsuranceClaimSystemConstants.FIRST_LEVEL_APPROVED;
+				Optional<Double> eligibleAmount = claimRepository.getEligibleamount(claimApproveRequest.getClaimId());
+				if (eligibleAmount.isPresent() && claimOptional.get().getTotalClaimAmount() > eligibleAmount.get()) {
+					status = InsuranceClaimSystemConstants.SECOND_LEVEL_APPROVED;
+				}
+			} else if (role.get().equals(InsuranceClaimSystemConstants.FIRST_LEVEL_APPROVER)
+					&& claimApproveRequest.getClaimStatus().equals(InsuranceClaimSystemConstants.REJECT)) {
+				status = InsuranceClaimSystemConstants.FIRST_LEVEL_REJECTED;
+			} else if (role.get().equals(InsuranceClaimSystemConstants.SECOND_LEVEL_APPROVER)
+					&& claimApproveRequest.getClaimStatus().equals(InsuranceClaimSystemConstants.APPROVE)) {
+				status = InsuranceClaimSystemConstants.SECOND_LEVEL_APPROVED;
+			} else if (role.get().equals(InsuranceClaimSystemConstants.SECOND_LEVEL_APPROVER)
+					&& claimApproveRequest.getClaimStatus().equals(InsuranceClaimSystemConstants.REJECT)) {
+				status = InsuranceClaimSystemConstants.SECOND_LEVEL_REJECTED;
+			}
+			claimRepository.updateStatus(status, claimOptional.get().getClaimId());
+			claimDetail.setApprovalDate(LocalDateTime.now());
+			claimDetail.setClaimId(claimOptional.get().getClaimId());
+			claimDetail.setApprovalStatus(status);
+			claimDetail.setApproverId(userId);
+			claimDetail.setComments(claimApproveRequest.getComments());
+			claimDetail = claimDetailRepository.save(claimDetail);
+		}
+
 		log.info(InsuranceClaimSystemConstants.APPROVE_DEBUG_END_SERVICE);
 		return Optional.of(claimDetail);
 	}

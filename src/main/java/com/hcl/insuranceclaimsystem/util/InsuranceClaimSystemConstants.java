@@ -50,5 +50,12 @@ public class InsuranceClaimSystemConstants {
 	public static final String CLAIM_INFO_END_SERVICE = "End processing of getClaims in service";
 	public static final String HOSPITAL_LIST_EMPTY = "hospital list is empty";	
 	public static final String CLAIM_ENTRY_SUCCSES = "claim enterd succsesfully";
-
+	public static final String INVALID_INSURANCE_NUMBER="Invalid Insurance Number";
+	public static final String INVALID_DATE_RANGE = "Invalid Date Range";
+	public static final String INVALID_DETAILS = "Invalid Details";
+	public static final String AILMENT_NOT_FOUND = "Ailment Not Found";
+    public static final String CLAIM_ENTRY_SERVICE_STRAT = "ClaimServiceImpl-->ClaimEntryOutput entry";
+    public static final String CLAIM_ENTRY_SERVICE_END="ClaimServiceImpl-->ClaimEntryOutput ";
+    public static final Double NETWORK_HOSPITAL_PERCENTAGE=0.8;
+    public static final Double OTHER_HOSPITAL_PERCENTAGE=0.6;
 }

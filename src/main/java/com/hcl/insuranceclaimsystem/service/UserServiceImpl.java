@@ -54,6 +54,10 @@ public class UserServiceImpl implements UserService {
 			if (claimOptional.isPresent() ) {
 				if (role.get().equals(InsuranceClaimSystemConstants.FIRST_LEVEL_APPROVER) &&  claimApproveRequest.getClaimStatus().equals(InsuranceClaimSystemConstants.APPROVE)) {
 					status = InsuranceClaimSystemConstants.FIRST_LEVEL_APPROVED;
+					Optional<Double> eligibleAmount=claimRepository.getEligibleamount(claimApproveRequest.getClaimId());
+					if(eligibleAmount.isPresent()&&claimOptional.get().getTotalClaimAmount()>eligibleAmount.get()) {
+						status = InsuranceClaimSystemConstants.SECOND_LEVEL_APPROVED;
+					}
 				}else if (role.get().equals(InsuranceClaimSystemConstants.FIRST_LEVEL_APPROVER) &&  claimApproveRequest.getClaimStatus().equals(InsuranceClaimSystemConstants.REJECT)) {
 					status = InsuranceClaimSystemConstants.FIRST_LEVEL_REJECTED;
 				}

@@ -11,10 +11,9 @@ import lombok.Setter;
 @Entity
 @Setter
 @Getter
-public class AilmentDetail {
+public class Ailment {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer ailmentDetailId;
 	private String natureOfAilment;
-	private Double eligibleAmount;
 }

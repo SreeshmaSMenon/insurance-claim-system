@@ -8,7 +8,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.hcl.insuranceclaimsystem.dto.AilmentData;
-import com.hcl.insuranceclaimsystem.entity.AilmentDetail;
+import com.hcl.insuranceclaimsystem.entity.Ailment;
 import com.hcl.insuranceclaimsystem.repository.AilmentRepository;
 import com.hcl.insuranceclaimsystem.util.InsuranceClaimSystemConstants;
 
@@ -35,7 +35,7 @@ public class AilmentServiceImpl implements AilmentService {
 	public Optional<List<AilmentData>> getAllAilment() {
 		log.info(InsuranceClaimSystemConstants.AILMENT_DEBUG_START_SERVICE);
 		List<AilmentData> ailmentList=new ArrayList<>();
-		List<AilmentDetail> ailmentDetails=ailmentRepository.findAll();
+		List<Ailment> ailmentDetails=ailmentRepository.findAll();
 		ailmentDetails.forEach(ailmentDetail->{
 			AilmentData ailmentData=new AilmentData();
 			BeanUtils.copyProperties(ailmentDetail, ailmentData);

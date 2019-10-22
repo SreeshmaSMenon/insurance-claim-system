@@ -14,7 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import com.hcl.insuranceclaimsystem.dto.AilmentData;
-import com.hcl.insuranceclaimsystem.entity.AilmentDetail;
+import com.hcl.insuranceclaimsystem.entity.Ailment;
 import com.hcl.insuranceclaimsystem.repository.AilmentRepository;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -23,15 +23,14 @@ public class AilmentServiceTest {
 	AilmentRepository ailmentRepository;
 	@InjectMocks
 	AilmentServiceImpl ailmentServiceImpl;
-	List<AilmentDetail> ailmentList;
+	List<Ailment> ailmentList;
 
 	@Before
 	public void setup() {
 		ailmentList = new ArrayList<>();
-		AilmentDetail ailmentDetail = new AilmentDetail();
+		Ailment ailmentDetail = new Ailment();
 		ailmentDetail.setAilmentDetailId(1);
 		ailmentDetail.setNatureOfAilment("dengue");
-		ailmentDetail.setEligibleAmount(100000.0);
 		ailmentList.add(ailmentDetail);
 	}
 

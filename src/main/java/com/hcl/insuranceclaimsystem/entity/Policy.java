@@ -15,6 +15,6 @@ public class Policy {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer policyNumber;
-	private String policyType;
-	private Double amount;
+	private Integer ailmentId;
+	private Double eligibleAmount;
 }

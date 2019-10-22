@@ -62,7 +62,6 @@ public class ClaimServiceImplTest {
 	User user;
 	Role role;
 	Claim claim;
-	Claim claim2;
 	List<Claim> claims;
 	String userRole;
 	Integer claimId;
@@ -88,14 +87,12 @@ public class ClaimServiceImplTest {
 		role.setRoleName("FIRST_LEVEL_APPROVER");
 		role.setRoleId(1);
 		userRole = "FIRST_LEVEL_APPROVER";
-
 		insurance = new Insurance();
 		insurance.setAddress("address");
 		insurance.setCustomerName("Name");
 		insurance.setDob(LocalDate.now());
 		insurance.setInsuranceNumber(1);
 		insurance.setMobileNumber(999999999L);
-
 		claim = new Claim();
 		claim.setClaimId(1);
 		claim.setClaimStatus("PENDING");
@@ -109,10 +106,8 @@ public class ClaimServiceImplTest {
 		claim.setDocumentsPath("path");
 		claim.setHospitalName("hospitalName");
 		claim.setTotalClaimAmount(10000d);
-
 		claims = new ArrayList<>();
 		claims.add(claim);
-
 		claimId = 1;
 		statusList = new ArrayList<>();
 		hospitalDetail = new HospitalDetail();
@@ -123,11 +118,9 @@ public class ClaimServiceImplTest {
 		claimDetail.setApprovalStatus("pending");
 		status = claimDetail.getApprovalStatus();
 		statusList.add(status);
-
 		ailment = new Ailment();
 		ailment.setAilmentId(1);
 		ailment.setNatureOfAilment("HART");
-
 		claimEntryInput = new ClaimEntryInput();
 		claimEntryInput.setAdmissionDate(claim.getAdmissionDate());
 		claimEntryInput.setAilmentNature(ailment.getNatureOfAilment());
@@ -142,26 +135,23 @@ public class ClaimServiceImplTest {
 	@Test
 	public void testGetClaims() throws UserNotFoundException {
 		Mockito.when(userRepository.getUserRole(userId)).thenReturn(Optional.of(userRole));
-		// Mockito.when(claimRepository.findByClaimStatus(claim.getClaimStatus())).thenReturn(claims);
 		Optional<List<ClaimDetailsResponse>> claimResponses = claimServiceImpl.getClaims(userId);
-		// Assert.assertEquals(claims.get(0).getClaimId(),
-		// claimResponses.get().get(0).getClaimId());
 		assertNotNull(claimResponses);
 	}
 
-	/*
-	 * @Test public void testGetClaimsSecondLevelApprover() throws
-	 * UserNotFoundException { userId=2; user.setUserId(userId); user.setRoleId(2);
-	 * userRole = "SECOND_LEVEL_APPROVER";
-	 * claim2.setClaimStatus("SECOND_LEVEL_APPROVED"); claims.add(claim2);
-	 * Mockito.when(userRepository.getUserRole(userId)).thenReturn(Optional.of(
-	 * userRole));
-	 * Mockito.when(claimRepository.findByClaimStatus(claim.getClaimStatus())).
-	 * thenReturn(claims); Optional<List<ClaimDetailsResponse>> claimResponses =
-	 * claimServiceImpl.getClaims(userId);
-	 * Assert.assertEquals(claims.get(0).getClaimStatus(),
-	 * claimResponses.get().get(0).getClaimStatus()); }
-	 */
+	
+	@Test
+	public void testGetClaimsSecondLevelApprover() throws UserNotFoundException {
+		userId = 2;
+		user.setUserId(userId);
+		user.setRoleId(2);
+		userRole = "SECOND_LEVEL_APPROVER";
+		claim.setClaimStatus("SECOND_LEVEL_APPROVED");
+		claims.add(claim);
+		Mockito.when(userRepository.getUserRole(userId)).thenReturn(Optional.of(userRole));
+		Optional<List<ClaimDetailsResponse>> claimResponses = claimServiceImpl.getClaims(userId);
+		assertNotNull(claimResponses);
+	}
 
 	@Test(expected = UserNotFoundException.class)
 	public void testExpectedUserNotFoundException() throws UserNotFoundException {
@@ -231,5 +221,26 @@ public class ClaimServiceImplTest {
 		Assert.assertEquals(HttpStatus.OK.value(), actual.getStatusCode().intValue());
 
 	}
+	@Test
+	public void testHospitalExist() throws CommonException {
+		claimEntryInput.setInsuranceNumber(claim.getInsuranceNumber());
+		Mockito.when(insuranceRepository.findById(claim.getInsuranceNumber())).thenReturn(Optional.of(insurance));
+		Mockito.when(ailmentRepository.findByNatureOfAilment(claimEntryInput.getAilmentNature()))
+				.thenReturn(Optional.of(ailment));
+		Mockito.when(hospitalDetailRepository.findByHospitalName(Mockito.any())).thenReturn(Optional.empty());	
+		ClaimEntryOutput actual = claimServiceImpl.claimEntry(claimEntryInput);
+		Assert.assertEquals(HttpStatus.OK.value(), actual.getStatusCode().intValue());
 
+	}
+	@Test
+	public void testHospitalOther() throws CommonException {
+		claimEntryInput.setInsuranceNumber(claim.getInsuranceNumber());
+		Mockito.when(insuranceRepository.findById(claim.getInsuranceNumber())).thenReturn(Optional.of(insurance));
+		Mockito.when(ailmentRepository.findByNatureOfAilment(claimEntryInput.getAilmentNature()))
+				.thenReturn(Optional.of(ailment));
+		Mockito.when(hospitalDetailRepository.findByHospitalName(Mockito.any())).thenReturn(Optional.of(hospitalDetail));	
+		ClaimEntryOutput actual = claimServiceImpl.claimEntry(claimEntryInput);
+		Assert.assertEquals(HttpStatus.OK.value(), actual.getStatusCode().intValue());
+
+	}
 }

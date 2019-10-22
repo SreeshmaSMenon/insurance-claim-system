@@ -130,30 +130,37 @@ public class ClaimServiceImpl implements ClaimService {
 	@Override
 	public ClaimEntryOutput claimEntry(ClaimEntryInput claimEntryInput) throws CommonException {
 
-		log.info("ClaimServiceImpl-->ClaimEntryOutput entry");
-		log.info("records hospitalName:{} ", claimEntryInput.getHospitalName());
+		log.info(InsuranceClaimSystemConstants.CLAIM_ENTRY_SERVICE_STRAT);
 		Optional<Insurance> insuranceOptional = insuranceRepository.findById(claimEntryInput.getInsuranceNumber());
 		if (!insuranceOptional.isPresent())
-			throw new CommonException("invalid insurance Number");
+			throw new CommonException(InsuranceClaimSystemConstants.INVALID_INSURANCE_NUMBER);
 		if (claimEntryInput.getAdmissionDate().isAfter(claimEntryInput.getDischargeDate()))
-			throw new CommonException("admission uplo");
+			throw new CommonException(InsuranceClaimSystemConstants.INVALID_DATE_RANGE);
 		if (claimEntryInput.getTotalClaimAmount() < 0)
-			throw new CommonException("invalid deatils");
+			throw new CommonException(InsuranceClaimSystemConstants.INVALID_DETAILS);
 		Optional<Ailment> ailmentOptional = ailmentRepository.findByNatureOfAilment(claimEntryInput.getAilmentNature());
 		if (!ailmentOptional.isPresent()) {
-			throw new CommonException("Ailment Not Found");
+			throw new CommonException(InsuranceClaimSystemConstants.AILMENT_NOT_FOUND);
 		}
+		Optional<HospitalDetail> hospitalDetail = hospitalDetailRepository
+				.findByHospitalName(claimEntryInput.getHospitalName());
+		Double amout = claimEntryInput.getTotalClaimAmount();
+		if (hospitalDetail.isPresent()) {
+			amout = amout * (InsuranceClaimSystemConstants.NETWORK_HOSPITAL_PERCENTAGE);
+		} else {
+			amout = amout * (InsuranceClaimSystemConstants.OTHER_HOSPITAL_PERCENTAGE);
+		}
+		claimEntryInput.setTotalClaimAmount(amout);
 		Claim claim = new Claim();
 		BeanUtils.copyProperties(claimEntryInput, claim);
 		claim.setClaimDate(LocalDateTime.now());
 		claim.setClaimStatus(InsuranceClaimSystemConstants.CLAIM_PENDING);
 		claimRepository.save(claim);
-
 		ClaimEntryOutput claimEntryOutput = new ClaimEntryOutput();
 		claimEntryOutput.setClaimId(claim.getClaimId());
 		claimEntryOutput.setMessage(CLAIM_ENTRY_SUCCSES);
 		claimEntryOutput.setStatusCode(HttpStatus.OK.value());
-		log.info("ClaimServiceImpl-->ClaimEntryOutput ");
+		log.info(InsuranceClaimSystemConstants.CLAIM_ENTRY_SERVICE_END);
 		return claimEntryOutput;
 	}
 

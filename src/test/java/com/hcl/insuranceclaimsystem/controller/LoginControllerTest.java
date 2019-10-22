@@ -1,6 +1,7 @@
 package com.hcl.insuranceclaimsystem.controller;
 
 import static org.junit.Assert.assertNotNull;
+
 import static org.mockito.Mockito.mock;
 
 import java.util.Optional;

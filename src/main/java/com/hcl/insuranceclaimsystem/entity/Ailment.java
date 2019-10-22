@@ -1,8 +1,6 @@
 package com.hcl.insuranceclaimsystem.entity;
 
 
-import java.time.LocalDateTime;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,13 +12,9 @@ import lombok.Setter;
 @Entity
 @Setter
 @Getter
-public class ClaimDetail {
+public class Ailment {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer claimDetailId;
-	private Integer claimId;
-	private Integer approverId;
-	private String approvalStatus;
-	private String comments;
-	private LocalDateTime approvalDate;
+	private Integer ailmentId;
+	private String natureOfAilment;
 }

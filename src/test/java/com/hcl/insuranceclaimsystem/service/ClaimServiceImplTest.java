@@ -1,6 +1,7 @@
 package com.hcl.insuranceclaimsystem.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.junit.Assert;
@@ -43,8 +44,12 @@ class ClaimServiceImplTest {
 		insurance.setDob(LocalDate.now());
 		insurance.setInsuranceNumber(1);
 		insurance.setMobileNumber(999999999L);
+
 		claim = new Claim();
 		claim.setClaimId(1);
+		claim.setClaimDate(LocalDateTime.now());
+		claim.setDischargeDate(LocalDate.now().plusDays(2));
+		claim.setClaimDate(LocalDateTime.now());
 
 		claimEntryInput = new ClaimEntryInput();
 		claimEntryInput.setAdmissionDate(LocalDate.now());
@@ -53,6 +58,8 @@ class ClaimServiceImplTest {
 		claimEntryInput.setDiagnosis("diagnosis");
 		claimEntryInput.setTotalClaimAmount(10000d);
 		claimEntryInput.setDischargeDate(LocalDate.now().plusDays(2));
+		
+
 	}
 
 	@Test

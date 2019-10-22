@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import com.hcl.insuranceclaimsystem.entity.Insurance;
 import com.hcl.insuranceclaimsystem.exception.CommonException;
 import com.hcl.insuranceclaimsystem.repository.ClaimRepository;
 import com.hcl.insuranceclaimsystem.repository.InsuranceRepository;
+import com.hcl.insuranceclaimsystem.util.InsuranceClaimSystemConstants;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,6 +33,9 @@ public class ClaimServiceImpl implements ClaimService {
 	ClaimRepository claimRepository;
 	@Autowired
 	InsuranceRepository insuranceRepository;
+
+	@Value("${file.upload-dir}")
+	private String url;
 
 	/**
 	 * claim entry will create the claim with required details
@@ -55,6 +60,7 @@ public class ClaimServiceImpl implements ClaimService {
 		Claim claim = new Claim();
 		BeanUtils.copyProperties(claimEntryInput, claim);
 		claim.setClaimDate(LocalDateTime.now());
+		claim.setClaimStatus(InsuranceClaimSystemConstants.CLAIM_PENDING);
 		claimRepository.save(claim);
 
 		ClaimEntryOutput claimEntryOutput = new ClaimEntryOutput();
@@ -65,9 +71,21 @@ public class ClaimServiceImpl implements ClaimService {
 		return claimEntryOutput;
 	}
 
-	@Override
-	public ClaimEntryOutput trackClaim(ClaimEntryInput claimEntryInput) throws CommonException {
-		return null;
-	}
+//	@Override
+//	public ClaimEntryOutput claimEntryFile(MultipartFile file, Integer claimId) throws CommonException, IOException {
+//
+//		if (!file.isEmpty()) {
+//
+//			log.info("file url:{}, file name:{}", url, file.getOriginalFilename());
+//			// save File
+//			byte[] bytes = file.getBytes();
+//			Path path = Paths.get(claimId + ".pdf");
+//			Files.write(path, bytes);
+//			log.info("claimEntryFile completed file check:{}", new File(claimId + ".pdf").exists());
+//
+//		}
+//
+//		return null;
+//	}
 
 }

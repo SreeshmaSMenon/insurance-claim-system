@@ -25,5 +25,6 @@ public class InsuranceClaimSystemConstants {
 	public static final String USER_ID_NULL = "userId should not be null";
 	public static final String USER_ID_EMPTY = "userId should not be empty";
 	public static final String CLAIM_ENTRY_SUCCSES = "claim enterd succsesfully";
+	public static final String CLAIM_PENDING = "PENDING";
 
 }

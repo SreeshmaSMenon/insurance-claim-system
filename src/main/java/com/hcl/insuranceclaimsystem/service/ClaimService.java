@@ -7,6 +7,6 @@ import com.hcl.insuranceclaimsystem.exception.CommonException;
 public interface ClaimService {
 	
 	public ClaimEntryOutput claimEntry( ClaimEntryInput claimEntryInput) throws CommonException;
-	public ClaimEntryOutput trackClaim( ClaimEntryInput claimEntryInput) throws CommonException;
+//	public ClaimEntryOutput claimEntryFile( MultipartFile file, Integer claimId) throws CommonException, IOException;
 
 }

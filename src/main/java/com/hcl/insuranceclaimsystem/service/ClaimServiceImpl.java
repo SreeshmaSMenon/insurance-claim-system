@@ -70,7 +70,6 @@ public class ClaimServiceImpl implements ClaimService {
 	public Optional<List<ClaimDetailsResponse>> getClaims(Integer userId) throws UserNotFoundException {
 		log.info(InsuranceClaimSystemConstants.CLAIM_INFO_START_SERVICE);
 		Optional<String> role = userRepository.getUserRole(userId);
-		ClaimDetailsResponse claimResponse = new ClaimDetailsResponse();
 		if (!role.isPresent()) {
 			throw new UserNotFoundException(InsuranceClaimSystemConstants.USER_NOT_FOUND);
 		}
@@ -82,6 +81,7 @@ public class ClaimServiceImpl implements ClaimService {
 			claims = claimRepository.findByClaimStatus(InsuranceClaimSystemConstants.FIRST_LEVEL_APPROVED);
 		}
 		claims.stream().forEach(claim -> {
+			ClaimDetailsResponse claimResponse = new ClaimDetailsResponse();
 			BeanUtils.copyProperties(claim, claimResponse);
 			claimResponses.add(claimResponse);
 		});
@@ -116,9 +116,14 @@ public class ClaimServiceImpl implements ClaimService {
 	 * @return List<string>
 	 */
 	@Transactional
-	public List<String> trackClaim(Integer claimId) {
+	public String trackClaim(Integer claimId) {
 		log.info(InsuranceClaimSystemConstants.TRACK_STATUS_INFO_START_SERVICE);
-		return claimDetailRepository.findByClaimId(claimId);
+		Optional<Claim>claim= claimRepository.findById(claimId);
+		String status="";
+		if(claim.isPresent()) {
+			status=claim.get().getClaimStatus();
+		}
+		return status;
 	}
 
 	@Value("${file.upload-dir}")

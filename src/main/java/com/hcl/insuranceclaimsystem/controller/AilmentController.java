@@ -18,8 +18,7 @@ import com.hcl.insuranceclaimsystem.util.InsuranceClaimSystemConstants;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * This class contains method for user operations
- * 
+ * This class contains method for ailment operations.
  * @author Sreeshma S Menon
  * @see 2019/10/21
  *

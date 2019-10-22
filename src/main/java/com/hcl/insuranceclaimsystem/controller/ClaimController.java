@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import com.hcl.insuranceclaimsystem.dto.ClaimEntryInput;
 import com.hcl.insuranceclaimsystem.dto.ClaimEntryOutput;
+import com.hcl.insuranceclaimsystem.dto.CommonResponse;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -28,7 +30,6 @@ import lombok.extern.slf4j.Slf4j;
  * 
  * @author KiruthikaK
  * @author Sairam
- * 
  * @since 2019/10/21
  *
  */
@@ -86,11 +87,14 @@ public class ClaimController {
 	 * @return List<string>
 	 */
 	@GetMapping("/claims/{claimId}/status")
-	public ResponseEntity<List<String>> trackClaim(@PathVariable Integer claimId) {
+	public ResponseEntity<CommonResponse> trackClaim(@PathVariable Integer claimId) {
 		log.info(InsuranceClaimSystemConstants.TRACK_STATUS_INFO_START_CONTROLLER);
-		List<String> statusList = claimService.trackClaim(claimId);
+		CommonResponse commonResponse=new CommonResponse();
+		String status = claimService.trackClaim(claimId);
+		commonResponse.setStatusCode(HttpStatus.OK.value());
+		commonResponse.setStatusMessage(status);
 		log.info(InsuranceClaimSystemConstants.TRACK_STATUS_INFO_END_CONTROLLER);
-		return new ResponseEntity<>(statusList, HttpStatus.OK);
+		return new ResponseEntity<>(commonResponse, HttpStatus.OK);
 	}
 
 	/**

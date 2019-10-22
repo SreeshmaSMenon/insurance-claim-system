@@ -14,6 +14,6 @@ public interface ClaimService {
 	public Optional<List<ClaimDetailsResponse>> getClaims(Integer userId) throws UserNotFoundException;
 	public Optional<List<HospitalDetails>> getAllHospitalDetails();
 	public ClaimEntryOutput claimEntry(ClaimEntryInput claimEntryInput) throws CommonException;
-	public List<String> trackClaim(Integer claimId);
+	public String trackClaim(Integer claimId);
 
 }

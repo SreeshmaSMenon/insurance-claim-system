@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import com.hcl.insuranceclaimsystem.dto.ClaimDetailsResponse;
 import com.hcl.insuranceclaimsystem.dto.ClaimEntryInput;
 import com.hcl.insuranceclaimsystem.dto.ClaimEntryOutput;
+import com.hcl.insuranceclaimsystem.dto.CommonResponse;
 import com.hcl.insuranceclaimsystem.dto.HospitalDetails;
 import com.hcl.insuranceclaimsystem.entity.Claim;
 import com.hcl.insuranceclaimsystem.entity.Role;
@@ -47,9 +48,12 @@ public class ClaimControllerTest {
 	
 	ClaimEntryInput claimEntryInput;
 	ClaimEntryOutput  claimEntryOutput;
-
+	CommonResponse commonResponse;
 	@Before
 	public void setup() {
+		commonResponse=new CommonResponse();
+		commonResponse.setStatusCode(200);
+		commonResponse.setStatusMessage("PENDING");
 		userId = 1;
 		claimResponse = new ClaimDetailsResponse();
 		claimResponse.setClaimId(1);
@@ -116,9 +120,9 @@ public class ClaimControllerTest {
 
 	@Test
 	public void testtrackClaim() {
-		Mockito.when(claimService.trackClaim(claimId)).thenReturn(statusList);
-		ResponseEntity<List<String>> actual = claimController.trackClaim(claimId);
-		ResponseEntity<List<String>> expected = new ResponseEntity<>(statusList, HttpStatus.OK);
+		Mockito.when(claimService.trackClaim(claimId)).thenReturn("PENDING");
+		ResponseEntity<CommonResponse> actual = claimController.trackClaim(claimId);
+		ResponseEntity<CommonResponse> expected = new ResponseEntity<>(commonResponse, HttpStatus.OK);
 		Assert.assertEquals(expected.getStatusCodeValue(), actual.getStatusCodeValue());
 
 	}

@@ -169,9 +169,10 @@ public class ClaimServiceImplTest {
 
 	@Test
 	public void testTrackClaim() {
-		Mockito.when(claimDetailRepository.findByClaimId(claimId)).thenReturn(statusList);
-		List<String> actualStatusList = claimServiceImpl.trackClaim(claimId);
-		Assert.assertEquals(statusList.toString(), actualStatusList.toString());
+		claim.setClaimStatus("PENDING");
+		Mockito.when(claimRepository.findById(claimId)).thenReturn(Optional.of(claim));
+		String actualStatus = claimServiceImpl.trackClaim(claimId);
+		Assert.assertEquals("PENDING", actualStatus);
 	}
 
 	@Test(expected = CommonException.class)

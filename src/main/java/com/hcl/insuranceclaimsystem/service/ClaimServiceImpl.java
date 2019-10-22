@@ -21,6 +21,7 @@ import com.hcl.insuranceclaimsystem.dto.ClaimEntryOutput;
 import com.hcl.insuranceclaimsystem.dto.HospitalDetails;
 import com.hcl.insuranceclaimsystem.entity.Ailment;
 import com.hcl.insuranceclaimsystem.entity.Claim;
+import com.hcl.insuranceclaimsystem.entity.ClaimDetail;
 import com.hcl.insuranceclaimsystem.entity.HospitalDetail;
 import com.hcl.insuranceclaimsystem.entity.Insurance;
 import com.hcl.insuranceclaimsystem.exception.CommonException;
@@ -70,7 +71,6 @@ public class ClaimServiceImpl implements ClaimService {
 	public Optional<List<ClaimDetailsResponse>> getClaims(Integer userId) throws UserNotFoundException {
 		log.info(InsuranceClaimSystemConstants.CLAIM_INFO_START_SERVICE);
 		Optional<String> role = userRepository.getUserRole(userId);
-		ClaimDetailsResponse claimResponse = new ClaimDetailsResponse();
 		if (!role.isPresent()) {
 			throw new UserNotFoundException(InsuranceClaimSystemConstants.USER_NOT_FOUND);
 		}
@@ -82,6 +82,7 @@ public class ClaimServiceImpl implements ClaimService {
 			claims = claimRepository.findByClaimStatus(InsuranceClaimSystemConstants.FIRST_LEVEL_APPROVED);
 		}
 		claims.stream().forEach(claim -> {
+			ClaimDetailsResponse claimResponse = new ClaimDetailsResponse();
 			BeanUtils.copyProperties(claim, claimResponse);
 			claimResponses.add(claimResponse);
 		});
@@ -154,12 +155,21 @@ public class ClaimServiceImpl implements ClaimService {
 		} else {
 			amout = amout * (InsuranceClaimSystemConstants.OTHER_HOSPITAL_PERCENTAGE);
 		}
+
 		claimEntryInput.setTotalClaimAmount(amout);
 		Claim claim = new Claim();
 		BeanUtils.copyProperties(claimEntryInput, claim);
 		claim.setClaimDate(LocalDateTime.now());
 		claim.setClaimStatus(InsuranceClaimSystemConstants.CLAIM_PENDING);
 		claimRepository.save(claim);
+
+		// claim details entry
+		ClaimDetail claimDetail = new ClaimDetail();
+		claimDetail.setApprovalDate(LocalDateTime.now());
+		claimDetail.setApprovalStatus(InsuranceClaimSystemConstants.CLAIM_PENDING);
+		claimDetail.setClaimId(claim.getClaimId());
+		claimDetailRepository.save(claimDetail);
+
 		ClaimEntryOutput claimEntryOutput = new ClaimEntryOutput();
 		claimEntryOutput.setClaimId(claim.getClaimId());
 		claimEntryOutput.setMessage(CLAIM_ENTRY_SUCCSES);

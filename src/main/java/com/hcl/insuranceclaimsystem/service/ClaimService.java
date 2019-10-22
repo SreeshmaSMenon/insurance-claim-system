@@ -13,8 +13,7 @@ import com.hcl.insuranceclaimsystem.exception.UserNotFoundException;
 public interface ClaimService {
 	public Optional<List<ClaimDetailsResponse>> getClaims(Integer userId) throws UserNotFoundException;
 	public Optional<List<HospitalDetails>> getAllHospitalDetails();
-	public ClaimEntryOutput claimEntry( ClaimEntryInput claimEntryInput) throws CommonException;
-//	public ClaimEntryOutput claimEntryFile( MultipartFile file, Integer claimId) throws CommonException, IOException;
+	public ClaimEntryOutput claimEntry(ClaimEntryInput claimEntryInput) throws CommonException;
 	public List<String> trackClaim(Integer claimId);
 
 }

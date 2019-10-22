@@ -165,21 +165,4 @@ public class ClaimServiceImpl implements ClaimService {
 		return claimEntryOutput;
 	}
 
-//	@Override
-//	public ClaimEntryOutput claimEntryFile(MultipartFile file, Integer claimId) throws CommonException, IOException {
-//
-//		if (!file.isEmpty()) {
-//
-//			log.info("file url:{}, file name:{}", url, file.getOriginalFilename());
-//			// save File
-//			byte[] bytes = file.getBytes();
-//			Path path = Paths.get(claimId + ".pdf");
-//			Files.write(path, bytes);
-//			log.info("claimEntryFile completed file check:{}", new File(claimId + ".pdf").exists());
-//
-//		}
-//
-//		return null;
-//	}
-
 }

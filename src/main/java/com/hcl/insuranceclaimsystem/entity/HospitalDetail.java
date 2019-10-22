@@ -10,10 +10,11 @@ import lombok.Setter;
 @Entity
 @Setter
 @Getter
-public class Policy {
+public class HospitalDetail {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer policyNumber;
-	private Integer ailmentId;
-	private Double eligibleAmount;
+	private Integer hospitalId;
+	private String hospitalName;
+	private String hospitalAddress;
+
 }

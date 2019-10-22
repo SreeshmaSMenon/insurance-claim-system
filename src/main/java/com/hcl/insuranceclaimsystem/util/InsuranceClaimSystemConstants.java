@@ -34,6 +34,14 @@ public class InsuranceClaimSystemConstants {
 	public static final String CLAIM_INFO_START_SERVICE = "Start processing of getClaims  in service";
 	public static final String CLAIM_INFO_END_SERVICE = "End processing of getClaims in service";
 	public static final String HOSPITAL_LIST_EMPTY = "hospital list is empty";
+	public static final String GET_HOSPITAL_INFO_START_CONTROLLER = "Start processing of getAllHospital  in controller";
+	public static final String GET_HOSPITAL_INFO_END_CONTROLLER = "End processing of getAllHospital  in controller";
+	public static final String GET_HOSPITAL_INFO_START_SERVICE = "Start processing of getAllHospital  in Service";
+	public static final String GET_HOSPITAL_INFO_END_SERVICE = "End processing of getAllHospital  in Service";
+	public static final String TRACK_STATUS_INFO_START_CONTROLLER = "Start processing of TrackStatus  in controller";
+	public static final String TRACK_STATUS_INFO_END_CONTROLLER = "End processing of TrackStatus  in controller";
+	public static final String TRACK_STATUS_INFO_START_SERVICE = "Start processing of TrackStatus  in service";
+	public static final String TRACK_STATUS_INFO_END_SERVICE = "End processing of TrackStatus  in service";
 	
 
 }

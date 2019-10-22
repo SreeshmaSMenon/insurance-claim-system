@@ -2,7 +2,6 @@ package com.hcl.insuranceclaimsystem.controller;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.hcl.insuranceclaimsystem.dto.ClaimDetailsResponse;
 import com.hcl.insuranceclaimsystem.dto.HospitalDetails;
 import com.hcl.insuranceclaimsystem.exception.ClaimsNotFoundException;
@@ -19,13 +17,18 @@ import com.hcl.insuranceclaimsystem.exception.CommonException;
 import com.hcl.insuranceclaimsystem.exception.UserNotFoundException;
 import com.hcl.insuranceclaimsystem.service.ClaimService;
 import com.hcl.insuranceclaimsystem.util.InsuranceClaimSystemConstants;
-
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import com.hcl.insuranceclaimsystem.dto.ClaimEntryInput;
+import com.hcl.insuranceclaimsystem.dto.ClaimEntryOutput;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class contains have the method for get List of claims by the userId.
  * 
  * @author KiruthikaK
+ * @author Sairam
+ * 
  * @since 2019/10/21
  *
  */
@@ -89,4 +92,45 @@ public class ClaimController {
 		log.info(InsuranceClaimSystemConstants.TRACK_STATUS_INFO_END_CONTROLLER);
 		return new ResponseEntity<>(statusList, HttpStatus.OK);
 	}
+
+	/**
+	 * claimEntry is create the clime with required details
+	 * 
+	 * @param claimEntryInput
+	 * @return ClaimEntryOutput
+	 * @throws CommonException
+	 */
+	@PostMapping(value = "/claims")
+	public ResponseEntity<ClaimEntryOutput> claimEntry(@RequestBody ClaimEntryInput claimEntryInput)
+			throws CommonException {
+		log.info("ClaimController --->claimEntry");
+		return ResponseEntity.status(HttpStatus.OK).body(claimService.claimEntry(claimEntryInput));
+	}
+
+//	@PostMapping(value = "/claimsFile")
+//	public ResponseEntity<ClaimEntryOutput> claimEntryFile(
+//			@RequestParam(value = "admissionDate", required = false) LocalDate admissionDate,
+//			@RequestParam("ailmentNature") String ailmentNature, @RequestParam("customerName") String customerName,
+//			@RequestParam("diagnosis") String diagnosis,
+//			@RequestParam(value = "dischargeDate", required = false) LocalDate dischargeDate,
+//			@RequestParam("dischargeSummary") String dischargeSummary,
+//			@RequestParam("hospitalName") String hospitalName, @RequestParam("insuranceNumber") Integer insuranceNumber,
+//			@RequestParam("totalClaimAmount") Double totalClaimAmount, @RequestParam("file") MultipartFile file)
+//			throws CommonException, IOException {
+//		log.info("ClaimController --->claimEntry");
+//		ClaimEntryInput claimEntryInput = new ClaimEntryInput();
+//		claimEntryInput.setAdmissionDate(admissionDate);
+//		claimEntryInput.setAilmentNature(ailmentNature);
+//		claimEntryInput.setCustomerName(customerName);
+//		claimEntryInput.setDiagnosis(diagnosis);
+//		claimEntryInput.setDischargeDate(dischargeDate);
+//		claimEntryInput.setDischargeSummary(dischargeSummary);
+//		claimEntryInput.setHospitalName(hospitalName);
+//		claimEntryInput.setInsuranceNumber(insuranceNumber);
+//		claimEntryInput.setTotalClaimAmount(totalClaimAmount);
+//		ClaimEntryOutput claimEntryOutput = claimService.claimEntry(claimEntryInput);
+//		claimService.claimEntryFile(file, claimEntryOutput.getClaimId());
+//		return ResponseEntity.status(HttpStatus.OK).body(claimEntryOutput);
+//	}
+
 }

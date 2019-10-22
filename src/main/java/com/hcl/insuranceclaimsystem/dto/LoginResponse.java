@@ -9,7 +9,4 @@ public class LoginResponse {
   private Integer statusCode;
   private String message;
   private Integer userId;
-
-  
-  
 }

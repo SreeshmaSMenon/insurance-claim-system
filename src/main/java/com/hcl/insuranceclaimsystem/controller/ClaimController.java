@@ -70,12 +70,13 @@ public class ClaimController {
 	 */
 	@GetMapping("/hospitalDetails")
 	public ResponseEntity<List<HospitalDetails>> getAllHospitalDetails() throws CommonException {
+		log.info(InsuranceClaimSystemConstants.GET_HOSPITAL_INFO_START_CONTROLLER);
 		Optional<List<HospitalDetails>> hospitalDetails = claimService.getAllHospitalDetails();
 		if (!hospitalDetails.isPresent()) {
 			throw new CommonException(InsuranceClaimSystemConstants.HOSPITAL_LIST_EMPTY);
 		}
+		log.info(InsuranceClaimSystemConstants.GET_HOSPITAL_INFO_END_CONTROLLER);
 		return new ResponseEntity<>(hospitalDetails.get(), HttpStatus.OK);
-
 	}
 
 	/**
@@ -86,9 +87,10 @@ public class ClaimController {
 	 */
 	@GetMapping("/claims/{claimId}/status")
 	public ResponseEntity<List<String>> trackClaim(@PathVariable Integer claimId) {
+		log.info(InsuranceClaimSystemConstants.TRACK_STATUS_INFO_START_CONTROLLER);
 		List<String> statusList = claimService.trackClaim(claimId);
+		log.info(InsuranceClaimSystemConstants.TRACK_STATUS_INFO_END_CONTROLLER);
 		return new ResponseEntity<>(statusList, HttpStatus.OK);
-
 	}
 
 	/**

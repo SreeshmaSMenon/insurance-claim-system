@@ -96,6 +96,7 @@ public class ClaimServiceImpl implements ClaimService {
 	 */
 	@Transactional
 	public Optional<List<HospitalDetails>> getAllHospitalDetails() {
+		log.info(InsuranceClaimSystemConstants.GET_HOSPITAL_INFO_START_SERVICE);
 		List<HospitalDetail> details = hospitalDetailRepository.findAll();
 		List<HospitalDetails> hospitalDetailsList = new ArrayList<>();
 		details.stream().forEach(detail -> {
@@ -104,6 +105,7 @@ public class ClaimServiceImpl implements ClaimService {
 			hospitalDetails.setValue(detail.getHospitalName());
 			hospitalDetailsList.add(hospitalDetails);
 		});
+		log.info(InsuranceClaimSystemConstants.GET_HOSPITAL_INFO_END_SERVICE);
 		return Optional.of(hospitalDetailsList);
 	}
 
@@ -115,7 +117,11 @@ public class ClaimServiceImpl implements ClaimService {
 	 */
 	@Transactional
 	public List<String> trackClaim(Integer claimId) {
-		return claimDetailRepository.findByClaimId(claimId);
+		log.info(InsuranceClaimSystemConstants.TRACK_STATUS_INFO_START_SERVICE);
+		List<String> statusList=new ArrayList<>();
+		statusList = claimDetailRepository.findByClaimId(claimId);
+		log.info(InsuranceClaimSystemConstants.TRACK_STATUS_INFO_END_SERVICE);
+		return statusList;
 	}
 
 	@Value("${file.upload-dir}")

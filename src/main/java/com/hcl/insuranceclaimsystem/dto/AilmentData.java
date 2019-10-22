@@ -6,6 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AilmentData {
-	private Integer ailmentDetailId;
-	private String natureOfAilment;
+	private String label;
+	private String value;
 }

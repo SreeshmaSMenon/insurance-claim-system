@@ -6,8 +6,7 @@ import lombok.Setter;
 @Setter
 @Getter
 public class HospitalDetails {
-	private Integer hospitalId;
-	private String hospitalName;
-	private String hospitalAddress;
+	private String label;
+	private String value;
 
 }

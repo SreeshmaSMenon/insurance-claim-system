@@ -94,7 +94,8 @@ public class ClaimServiceImpl implements ClaimService {
 		List<HospitalDetails> hospitalDetailsList = new ArrayList<>();
 		details.stream().forEach(detail -> {
 			HospitalDetails hospitalDetails = new HospitalDetails();
-			BeanUtils.copyProperties(detail, hospitalDetails);
+			hospitalDetails.setLabel(detail.getHospitalName());
+			hospitalDetails.setValue(detail.getHospitalName());
 			hospitalDetailsList.add(hospitalDetails);
 		});
 		return Optional.of(hospitalDetailsList);

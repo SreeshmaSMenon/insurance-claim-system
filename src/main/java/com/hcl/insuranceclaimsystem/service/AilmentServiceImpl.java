@@ -3,14 +3,12 @@ package com.hcl.insuranceclaimsystem.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.hcl.insuranceclaimsystem.dto.AilmentData;
 import com.hcl.insuranceclaimsystem.entity.Ailment;
 import com.hcl.insuranceclaimsystem.repository.AilmentRepository;
 import com.hcl.insuranceclaimsystem.util.InsuranceClaimSystemConstants;
-
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -36,7 +34,8 @@ public class AilmentServiceImpl implements AilmentService {
 		List<Ailment> ailmentDetails=ailmentRepository.findAll();
 		ailmentDetails.forEach(ailmentDetail->{
 			AilmentData ailmentData=new AilmentData();
-			BeanUtils.copyProperties(ailmentDetail, ailmentData);
+			ailmentData.setLabel(ailmentDetail.getNatureOfAilment());
+			ailmentData.setValue(ailmentDetail.getNatureOfAilment());
 			ailmentList.add(ailmentData);
 			});
 		log.info(InsuranceClaimSystemConstants.AILMENT_DEBUG_END_SERVICE);

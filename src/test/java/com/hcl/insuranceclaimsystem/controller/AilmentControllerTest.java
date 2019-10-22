@@ -30,8 +30,8 @@ public class AilmentControllerTest {
     public void setup() {
     	ailmentList=new ArrayList<>();
         AilmentData ailmentData=new AilmentData();
-        ailmentData.setAilmentDetailId(1);
-        ailmentData.setNatureOfAilment("dengue");
+        ailmentData.setLabel("dengue");
+        ailmentData.setValue("dengue");
         ailmentList.add(ailmentData);
     }
     

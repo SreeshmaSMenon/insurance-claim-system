@@ -16,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.hcl.insuranceclaimsystem.dto.ClaimDetailsResponse;
+import com.hcl.insuranceclaimsystem.dto.ClaimEntryInput;
+import com.hcl.insuranceclaimsystem.dto.ClaimEntryOutput;
 import com.hcl.insuranceclaimsystem.dto.HospitalDetails;
 import com.hcl.insuranceclaimsystem.entity.Claim;
 import com.hcl.insuranceclaimsystem.entity.Role;
@@ -42,6 +44,9 @@ public class ClaimControllerTest {
 	HospitalDetails hospitalDetail;
 	List<HospitalDetails> hospitalDetails;
 	List<String> statusList;
+	
+	ClaimEntryInput claimEntryInput;
+	ClaimEntryOutput  claimEntryOutput;
 
 	@Before
 	public void setup() {
@@ -64,6 +69,15 @@ public class ClaimControllerTest {
 		hospitalDetails.add(hospitalDetail);
 		claimId = 1;
 		statusList = new ArrayList<>();
+		
+		claimEntryInput = new ClaimEntryInput();
+		claimEntryInput.setAdmissionDate(claim.getAdmissionDate());
+		claimEntryInput.setAilmentNature("hart");
+		claimEntryInput.setCustomerName("name");
+		claimEntryInput.setDiagnosis(claim.getDiagnosis());
+		claimEntryInput.setTotalClaimAmount(claim.getTotalClaimAmount());
+		claimEntryInput.setDischargeDate(claim.getDischargeDate());
+		claimEntryInput.setInsuranceNumber(claim.getInsuranceNumber());
 	}
 
 	@Test
@@ -106,6 +120,14 @@ public class ClaimControllerTest {
 		ResponseEntity<List<String>> actual = claimController.trackClaim(claimId);
 		ResponseEntity<List<String>> expected = new ResponseEntity<>(statusList, HttpStatus.OK);
 		Assert.assertEquals(expected.getStatusCodeValue(), actual.getStatusCodeValue());
+
+	}
+	@Test
+	public void testClaimEntry()
+			throws CommonException {
+		Mockito.when(claimService.claimEntry(claimEntryInput)).thenReturn(claimEntryOutput);
+		ResponseEntity<ClaimEntryOutput> actual = claimController.claimEntry(claimEntryInput);
+		Assert.assertEquals(HttpStatus.OK.value(), actual.getStatusCodeValue());
 
 	}
 }

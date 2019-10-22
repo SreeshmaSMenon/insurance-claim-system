@@ -105,4 +105,30 @@ public class ClaimController {
 		return ResponseEntity.status(HttpStatus.OK).body(claimService.claimEntry(claimEntryInput));
 	}
 
+//	@PostMapping(value = "/claimsFile")
+//	public ResponseEntity<ClaimEntryOutput> claimEntryFile(
+//			@RequestParam(value = "admissionDate", required = false) LocalDate admissionDate,
+//			@RequestParam("ailmentNature") String ailmentNature, @RequestParam("customerName") String customerName,
+//			@RequestParam("diagnosis") String diagnosis,
+//			@RequestParam(value = "dischargeDate", required = false) LocalDate dischargeDate,
+//			@RequestParam("dischargeSummary") String dischargeSummary,
+//			@RequestParam("hospitalName") String hospitalName, @RequestParam("insuranceNumber") Integer insuranceNumber,
+//			@RequestParam("totalClaimAmount") Double totalClaimAmount, @RequestParam("file") MultipartFile file)
+//			throws CommonException, IOException {
+//		log.info("ClaimController --->claimEntry");
+//		ClaimEntryInput claimEntryInput = new ClaimEntryInput();
+//		claimEntryInput.setAdmissionDate(admissionDate);
+//		claimEntryInput.setAilmentNature(ailmentNature);
+//		claimEntryInput.setCustomerName(customerName);
+//		claimEntryInput.setDiagnosis(diagnosis);
+//		claimEntryInput.setDischargeDate(dischargeDate);
+//		claimEntryInput.setDischargeSummary(dischargeSummary);
+//		claimEntryInput.setHospitalName(hospitalName);
+//		claimEntryInput.setInsuranceNumber(insuranceNumber);
+//		claimEntryInput.setTotalClaimAmount(totalClaimAmount);
+//		ClaimEntryOutput claimEntryOutput = claimService.claimEntry(claimEntryInput);
+//		claimService.claimEntryFile(file, claimEntryOutput.getClaimId());
+//		return ResponseEntity.status(HttpStatus.OK).body(claimEntryOutput);
+//	}
+
 }

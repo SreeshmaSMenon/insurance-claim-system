@@ -37,7 +37,7 @@ public class InsuranceClaimSystemConstants {
 	public static final String FIRST_LEVEL_APPROVED = "FIRST_LEVEL_APPROVED";
 	public static final String SECOND_LEVEL_APPROVED = "SECOND_LEVEL_APPROVED";
 	public static final String FIRST_LEVEL_REJECTED = "FIRST_LEVEL_REJECTED ";
-	public static final String SECOND_LEVEL_REJECTED  = "SECOND_LEVEL_REJECTED ";
+	public static final String SECOND_LEVEL_REJECTED = "SECOND_LEVEL_REJECTED ";
 	public static final String APPROVE = "APPROVE";
 	public static final String REJECT = "REJECT";
 	public static final String APPROVED = "APPROVED";
@@ -48,14 +48,15 @@ public class InsuranceClaimSystemConstants {
 	public static final String AILMENT_DEBUG_END_SERVICE = "End processing of getAllAilment() in service";
 	public static final String CLAIM_INFO_START_SERVICE = "Start processing of getClaims  in service";
 	public static final String CLAIM_INFO_END_SERVICE = "End processing of getClaims in service";
-	public static final String HOSPITAL_LIST_EMPTY = "hospital list is empty";	
+	public static final String HOSPITAL_LIST_EMPTY = "hospital list is empty";
 	public static final String CLAIM_ENTRY_SUCCSES = "claim enterd succsesfully";
-	public static final String INVALID_INSURANCE_NUMBER="Invalid Insurance Number";
+	public static final String CLAIM_PENDING = "PENDING";
+	public static final String INVALID_INSURANCE_NUMBER = "Invalid Insurance Number";
 	public static final String INVALID_DATE_RANGE = "Invalid Date Range";
 	public static final String INVALID_DETAILS = "Invalid Details";
 	public static final String AILMENT_NOT_FOUND = "Ailment Not Found";
-    public static final String CLAIM_ENTRY_SERVICE_STRAT = "ClaimServiceImpl-->ClaimEntryOutput entry";
-    public static final String CLAIM_ENTRY_SERVICE_END="ClaimServiceImpl-->ClaimEntryOutput ";
-    public static final Double NETWORK_HOSPITAL_PERCENTAGE=0.8;
-    public static final Double OTHER_HOSPITAL_PERCENTAGE=0.6;
+	public static final String CLAIM_ENTRY_SERVICE_STRAT = "ClaimServiceImpl-->ClaimEntryOutput entry";
+	public static final String CLAIM_ENTRY_SERVICE_END = "ClaimServiceImpl-->ClaimEntryOutput ";
+	public static final Double NETWORK_HOSPITAL_PERCENTAGE = 0.8;
+	public static final Double OTHER_HOSPITAL_PERCENTAGE = 0.6;
 }

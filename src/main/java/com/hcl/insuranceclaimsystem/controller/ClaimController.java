@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.hcl.insuranceclaimsystem.dto.ClaimDetailsResponse;
-import com.hcl.insuranceclaimsystem.dto.HospitalDetails;
+import com.hcl.insuranceclaimsystem.dto.HospitalDetail;
+import com.hcl.insuranceclaimsystem.exception.AilmentNotFoundException;
+import com.hcl.insuranceclaimsystem.exception.ClaimException;
 import com.hcl.insuranceclaimsystem.exception.ClaimsNotFoundException;
-import com.hcl.insuranceclaimsystem.exception.CommonException;
+import com.hcl.insuranceclaimsystem.exception.HospitalNotFoundException;
 import com.hcl.insuranceclaimsystem.exception.UserNotFoundException;
 import com.hcl.insuranceclaimsystem.service.ClaimService;
 import com.hcl.insuranceclaimsystem.util.InsuranceClaimSystemConstants;
@@ -67,14 +69,15 @@ public class ClaimController {
 	 * This method for get all the hospitalDetails.
 	 * 
 	 * @return List<HospitalDetails>
+	 * @throws HospitalNotFoundException 
 	 * @throws CommonException
 	 */
-	@GetMapping("/hospitalDetails")
-	public ResponseEntity<List<HospitalDetails>> getAllHospitalDetails() throws CommonException {
+	@GetMapping("/hospitals")
+	public ResponseEntity<List<HospitalDetail>> getAllHospitals() throws HospitalNotFoundException  {
 		log.info(InsuranceClaimSystemConstants.GET_HOSPITAL_INFO_START_CONTROLLER);
-		Optional<List<HospitalDetails>> hospitalDetails = claimService.getAllHospitalDetails();
+		Optional<List<HospitalDetail>> hospitalDetails = claimService.getAllHospitals();
 		if (!hospitalDetails.isPresent()) {
-			throw new CommonException(InsuranceClaimSystemConstants.HOSPITAL_LIST_EMPTY);
+			throw new HospitalNotFoundException(InsuranceClaimSystemConstants.HOSPITAL_NOT_FOUND);
 		}
 		log.info(InsuranceClaimSystemConstants.GET_HOSPITAL_INFO_END_CONTROLLER);
 		return new ResponseEntity<>(hospitalDetails.get(), HttpStatus.OK);
@@ -84,7 +87,7 @@ public class ClaimController {
 	 * This method for track the status for the particular claim.
 	 * 
 	 * @param claimId
-	 * @return List<string>
+	 * @return String
 	 */
 	@GetMapping("/claims/{claimId}/status")
 	public ResponseEntity<CommonResponse> trackClaim(@PathVariable Integer claimId) {
@@ -102,12 +105,13 @@ public class ClaimController {
 	 * 
 	 * @param claimEntryInput
 	 * @return ClaimEntryOutput
-	 * @throws CommonException
+	 * @throws AilmentNotFoundException 
+	 * @throws ClaimException 
 	 */
 	@PostMapping(value = "/claims")
-	public ResponseEntity<ClaimEntryOutput> claimEntry(@RequestBody ClaimEntryInput claimEntryInput)
-			throws CommonException {
-		log.info("ClaimController --->claimEntry");
+	public ResponseEntity<ClaimEntryOutput> claimEntry(@RequestBody ClaimEntryInput claimEntryInput) throws ClaimException, AilmentNotFoundException
+			 {
+		log.info(InsuranceClaimSystemConstants.CLAIM_ENTRY_CONTROLLER_STRAT);
 		return ResponseEntity.status(HttpStatus.OK).body(claimService.claimEntry(claimEntryInput));
 	}
 

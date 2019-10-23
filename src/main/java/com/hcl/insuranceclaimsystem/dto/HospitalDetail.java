@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class HospitalDetails {
+public class HospitalDetail {
 	private String label;
 	private String value;
 

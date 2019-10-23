@@ -12,33 +12,34 @@ import com.hcl.insuranceclaimsystem.util.InsuranceClaimSystemConstants;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * This class contains methods for ailment operations
- * 
+ * Implementation of AilmentService which will retrieve all available ailments.
  * @since 2019/10/21
  * @author Sreeshma S Menon
  */
 @Slf4j
 @Service
 public class AilmentServiceImpl implements AilmentService {
-	
+
 	@Autowired
-    AilmentRepository ailmentRepository;
+	AilmentRepository ailmentRepository;
+
 	/**
 	 * This method will retrieve all the ailment available from database.
+	 * 
 	 * @return Optional<List<AilmentData>>
 	 */
 	@Override
 	public Optional<List<AilmentData>> getAllAilment() {
-		log.info(InsuranceClaimSystemConstants.AILMENT_DEBUG_START_SERVICE);
-		List<AilmentData> ailmentList=new ArrayList<>();
-		List<Ailment> ailmentDetails=ailmentRepository.findAll();
-		ailmentDetails.forEach(ailmentDetail->{
-			AilmentData ailmentData=new AilmentData();
+		log.info(InsuranceClaimSystemConstants.AILMENT_INFO_START_SERVICE);
+		List<AilmentData> ailmentList = new ArrayList<>();
+		List<Ailment> ailmentDetails = ailmentRepository.findAll();
+		ailmentDetails.forEach(ailmentDetail -> {
+			AilmentData ailmentData = new AilmentData();
 			ailmentData.setLabel(ailmentDetail.getNatureOfAilment());
 			ailmentData.setValue(ailmentDetail.getNatureOfAilment());
 			ailmentList.add(ailmentData);
-			});
-		log.info(InsuranceClaimSystemConstants.AILMENT_DEBUG_END_SERVICE);
+		});
+		log.info(InsuranceClaimSystemConstants.AILMENT_INFO_END_SERVICE);
 		return Optional.of(ailmentList);
 	}
 

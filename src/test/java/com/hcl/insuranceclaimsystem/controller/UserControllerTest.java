@@ -20,6 +20,7 @@ import org.springframework.validation.FieldError;
 import com.hcl.insuranceclaimsystem.dto.ClaimApproveRequest;
 import com.hcl.insuranceclaimsystem.dto.CommonResponse;
 import com.hcl.insuranceclaimsystem.entity.ClaimDetail;
+import com.hcl.insuranceclaimsystem.exception.ClaimsNotFoundException;
 import com.hcl.insuranceclaimsystem.exception.UserException;
 import com.hcl.insuranceclaimsystem.exception.UserNotFoundException;
 import com.hcl.insuranceclaimsystem.service.UserService;
@@ -51,7 +52,7 @@ public class UserControllerTest {
 	}
 
 	@Test
-	public void testApproveClaim() throws UserNotFoundException, UserException {
+	public void testApproveClaim() throws UserNotFoundException, UserException, ClaimsNotFoundException {
 		Mockito.when(bindingResult.hasErrors()).thenReturn(false);
 		Mockito.when(userService.approveClaim(Mockito.anyInt(), Mockito.any())).thenReturn(Optional.of(claimDetail));
 		ResponseEntity<CommonResponse> commonResponse = userController.approveClaim(claimApproveRequest, 1,
@@ -60,7 +61,7 @@ public class UserControllerTest {
 	}
 
 	@Test(expected = UserException.class)
-	public void testUserException() throws UserNotFoundException, UserException {
+	public void testUserException() throws UserNotFoundException, UserException, ClaimsNotFoundException {
 		Mockito.when(bindingResult.hasErrors()).thenReturn(true);
 		Mockito.when(bindingResult.getFieldError()).thenReturn(fieldError);
 		ResponseEntity<CommonResponse> commonResponse = userController.approveClaim(claimApproveRequest, 1,

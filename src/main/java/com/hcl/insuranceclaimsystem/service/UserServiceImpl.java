@@ -2,11 +2,15 @@ package com.hcl.insuranceclaimsystem.service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.hcl.insuranceclaimsystem.dto.ClaimApproveRequest;
 import com.hcl.insuranceclaimsystem.entity.Claim;
 import com.hcl.insuranceclaimsystem.entity.ClaimDetail;
+import com.hcl.insuranceclaimsystem.exception.ClaimsNotFoundException;
 import com.hcl.insuranceclaimsystem.exception.UserNotFoundException;
 import com.hcl.insuranceclaimsystem.repository.ClaimDetailRepository;
 import com.hcl.insuranceclaimsystem.repository.ClaimRepository;
@@ -39,19 +43,22 @@ public class UserServiceImpl implements UserService {
 	 * @param userId
 	 * @return Optional<String>
 	 * @throws UserNotFoundException
+	 * @throws ClaimsNotFoundException
 	 */
-	@Override
+	@Transactional
 	public Optional<ClaimDetail> approveClaim(Integer userId, ClaimApproveRequest claimApproveRequest)
-			throws UserNotFoundException {
-		log.info(InsuranceClaimSystemConstants.APPROVE_DEBUG_START_SERVICE);
+			throws UserNotFoundException, ClaimsNotFoundException {
+		log.info(InsuranceClaimSystemConstants.APPROVE_INFO_START_SERVICE);
 		ClaimDetail claimDetail = new ClaimDetail();
 		Optional<String> role = userRepository.getUserRole(userId);
 		if (!role.isPresent()) {
 			throw new UserNotFoundException(InsuranceClaimSystemConstants.USER_NOT_FOUND);
 		}
 		Optional<Claim> claimOptional = claimRepository.findById(claimApproveRequest.getClaimId());
-		String status = "";
-		if (claimOptional.isPresent()) {
+		if (!claimOptional.isPresent()) {
+			throw new ClaimsNotFoundException(InsuranceClaimSystemConstants.CLAIM_NOT_FOUND);
+		}
+		String status = null;
 			if (role.get().equals(InsuranceClaimSystemConstants.FIRST_LEVEL_APPROVER)
 					&& claimApproveRequest.getClaimStatus().equals(InsuranceClaimSystemConstants.APPROVE)) {
 				status = InsuranceClaimSystemConstants.FIRST_LEVEL_APPROVED;
@@ -69,16 +76,14 @@ public class UserServiceImpl implements UserService {
 					&& claimApproveRequest.getClaimStatus().equals(InsuranceClaimSystemConstants.REJECT)) {
 				status = InsuranceClaimSystemConstants.SECOND_LEVEL_REJECTED;
 			}
-			claimRepository.updateStatus(status, claimOptional.get().getClaimId());
-			claimDetail.setApprovalDate(LocalDateTime.now());
-			claimDetail.setClaimId(claimOptional.get().getClaimId());
-			claimDetail.setApprovalStatus(status);
-			claimDetail.setApproverId(userId);
-			claimDetail.setComments(claimApproveRequest.getComments());
-			claimDetail = claimDetailRepository.save(claimDetail);
-		}
-
-		log.info(InsuranceClaimSystemConstants.APPROVE_DEBUG_END_SERVICE);
+		claimRepository.updateStatus(status, claimOptional.get().getClaimId());
+		claimDetail.setApprovalDate(LocalDateTime.now());
+		claimDetail.setClaimId(claimOptional.get().getClaimId());
+		claimDetail.setApprovalStatus(status);
+		claimDetail.setApproverId(userId);
+		claimDetail.setComments(claimApproveRequest.getComments());
+		claimDetail = claimDetailRepository.save(claimDetail);
+		log.info(InsuranceClaimSystemConstants.APPROVE_INFO_END_SERVICE);
 		return Optional.of(claimDetail);
 	}
 

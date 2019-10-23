@@ -34,11 +34,11 @@ public class AilmentController {
 
 	/**
 	 * This method will retrieve all the ailment available from database. 
-	 * @return ResponseEntity<AilmentResponse>
+	 * @return AilmentResponse
 	 */
 	@GetMapping("/")
 	public ResponseEntity<AilmentResponse> getAllAilments() {
-		log.info(InsuranceClaimSystemConstants.AILMENT_DEBUG_START_CONTROLLER);
+		log.info(InsuranceClaimSystemConstants.AILMENT_INFO_START_CONTROLLER);
 		Optional<List<AilmentData>> ailmentListOptional = ailmentService.getAllAilment();
 		AilmentResponse ailmentResponse = new AilmentResponse();
 		if (ailmentListOptional.isPresent()) {
@@ -46,7 +46,7 @@ public class AilmentController {
 			ailmentResponse.setStatusMessage(InsuranceClaimSystemConstants.SUCCESS);
 			ailmentResponse.setAilmentList(ailmentListOptional.get());
 		}
-		log.info(InsuranceClaimSystemConstants.AILMENT_DEBUG_END_CONTROLLER);
+		log.info(InsuranceClaimSystemConstants.AILMENT_INFO_END_CONTROLLER);
 		return new ResponseEntity<>(ailmentResponse, HttpStatus.OK);
 	}
 

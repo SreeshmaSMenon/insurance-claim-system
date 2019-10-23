@@ -23,7 +23,7 @@ import com.hcl.insuranceclaimsystem.util.InsuranceClaimSystemConstants;
 
 import lombok.extern.slf4j.Slf4j;
 /**
- * This class includes method for login
+ * Controller for login to the application.
  * @since 2019/10/21
  * @author Sreeshma S Menon
  */
@@ -35,30 +35,28 @@ public class LoginController {
 	@Autowired
 	LoginService loginService;
 	/**
-	 * This method will accept LoginRequest as input login successfully if match.
-	 * @param loginRequest 
-	 * @param bindingResult
-	 * @exception UserException
-	 * @exception UserNotFoundException
-	 * @return ResponseEntity of LoginResponse 
+	 * Method to login to the application if proper credentials found.
+	 * @param loginRequest which includes the credentials details for login.
+	 * @param bindingResult Which includes Request body parameters.
+	 * @throws UserException will throw if the parameters of bindingResult is empty or null.
+	 * @throws UserNotFoundException will throw if the given credentials not found.
+	 * @return ResponseEntity of LoginResponse which contains successCode and successMessage.
 	 */
     @PostMapping(value = "/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest, BindingResult bindingResult) throws UserException, UserNotFoundException {
-    	log.debug(InsuranceClaimSystemConstants.LOGIN_DEBUG_END_CONTROLLER);
-    	log.info("inside login email:{} password:{}",loginRequest.getEmail(),loginRequest.getPassword());
+    	log.info(InsuranceClaimSystemConstants.LOGIN_INFO_START_CONTROLLER);
     	 LoginResponse loginResponse=new LoginResponse();
         if (bindingResult.hasErrors()) {
-        	throw new UserException(bindingResult.getFieldError().getField()+" "+bindingResult.getFieldError().getDefaultMessage());
+        	throw new UserException(bindingResult.getFieldError().getField()+InsuranceClaimSystemConstants.SEPERATOR+bindingResult.getFieldError().getDefaultMessage());
         }
         Optional<User> optionalUser=loginService.getUser(loginRequest);
-        if(optionalUser.isPresent()) {
-        	loginResponse.setStatusCode(HttpStatus.OK.value());
-        	loginResponse.setMessage(InsuranceClaimSystemConstants.SUCCESS);
-        	loginResponse.setUserId(optionalUser.get().getUserId());
-        }else {
+        if(!optionalUser.isPresent()) {
         	throw new UserNotFoundException(InsuranceClaimSystemConstants.USER_NOT_FOUND);
         }
-        log.debug(InsuranceClaimSystemConstants.LOGIN_DEBUG_START_CONTROLLER);
-        return new ResponseEntity<>(loginResponse,HttpStatus.CREATED);
-    }
+		loginResponse.setStatusCode(HttpStatus.OK.value());
+		loginResponse.setMessage(InsuranceClaimSystemConstants.SUCCESS);
+		loginResponse.setUserId(optionalUser.get().getUserId());
+        log.info(InsuranceClaimSystemConstants.LOGIN_INFO_END_CONTROLLER);
+		return new ResponseEntity<>(loginResponse, HttpStatus.CREATED);
+	}
 }

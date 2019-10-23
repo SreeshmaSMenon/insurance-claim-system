@@ -11,20 +11,20 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.hcl.insuranceclaimsystem.dto.ClaimDetailsResponse;
 import com.hcl.insuranceclaimsystem.dto.ClaimEntryInput;
 import com.hcl.insuranceclaimsystem.dto.ClaimEntryOutput;
-import com.hcl.insuranceclaimsystem.dto.HospitalDetails;
+import com.hcl.insuranceclaimsystem.dto.HospitalDetail;
 import com.hcl.insuranceclaimsystem.entity.Ailment;
 import com.hcl.insuranceclaimsystem.entity.Claim;
 import com.hcl.insuranceclaimsystem.entity.ClaimDetail;
-import com.hcl.insuranceclaimsystem.entity.HospitalDetail;
+import com.hcl.insuranceclaimsystem.entity.Hospital;
 import com.hcl.insuranceclaimsystem.entity.Insurance;
-import com.hcl.insuranceclaimsystem.exception.CommonException;
+import com.hcl.insuranceclaimsystem.exception.AilmentNotFoundException;
+import com.hcl.insuranceclaimsystem.exception.ClaimException;
 import com.hcl.insuranceclaimsystem.exception.UserNotFoundException;
 import com.hcl.insuranceclaimsystem.repository.AilmentRepository;
 import com.hcl.insuranceclaimsystem.repository.ClaimDetailRepository;
@@ -93,18 +93,18 @@ public class ClaimServiceImpl implements ClaimService {
 	/**
 	 * This Method for get all the Hospital details With in the network.
 	 * 
-	 * @return List<HospitalDetails>
+	 * @return List<HospitalDetail>
 	 */
 	@Transactional
-	public Optional<List<HospitalDetails>> getAllHospitalDetails() {
+	public Optional<List<HospitalDetail>> getAllHospitals() {
 		log.info(InsuranceClaimSystemConstants.GET_HOSPITAL_INFO_START_SERVICE);
-		List<HospitalDetail> details = hospitalDetailRepository.findAll();
-		List<HospitalDetails> hospitalDetailsList = new ArrayList<>();
+		List<Hospital> details = hospitalDetailRepository.findAll();
+		List<HospitalDetail> hospitalDetailsList = new ArrayList<>();
 		details.stream().forEach(detail -> {
-			HospitalDetails hospitalDetails = new HospitalDetails();
-			hospitalDetails.setLabel(detail.getHospitalName());
-			hospitalDetails.setValue(detail.getHospitalName());
-			hospitalDetailsList.add(hospitalDetails);
+			HospitalDetail hospitalDetail = new HospitalDetail();
+			hospitalDetail.setLabel(detail.getHospitalName());
+			hospitalDetail.setValue(detail.getHospitalName());
+			hospitalDetailsList.add(hospitalDetail);
 		});
 		log.info(InsuranceClaimSystemConstants.GET_HOSPITAL_INFO_END_SERVICE);
 		return Optional.of(hospitalDetailsList);
@@ -114,67 +114,63 @@ public class ClaimServiceImpl implements ClaimService {
 	 * This method for track the status for particular claim based on the claimId.
 	 * 
 	 * @param claimId
-	 * @return List<string>
+	 * @return string
 	 */
 	@Transactional
 	public String trackClaim(Integer claimId) {
 		log.info(InsuranceClaimSystemConstants.TRACK_STATUS_INFO_START_SERVICE);
-		Optional<Claim>claim= claimRepository.findById(claimId);
-		String status="";
-		if(claim.isPresent()) {
-			status=claim.get().getClaimStatus();
+		Optional<Claim> claim = claimRepository.findById(claimId);
+		String status = null;
+		if (claim.isPresent()) {
+			status = claim.get().getClaimStatus();
 		}
+		log.info(InsuranceClaimSystemConstants.TRACK_STATUS_INFO_END_SERVICE);
 		return status;
 	}
-
-	@Value("${file.upload-dir}")
-	private String url;
 
 	/**
 	 * claim entry will create the claim with required details
 	 * 
 	 * @param ClaimEntryInput
 	 * @return ClaimEntryOutput
-	 * @throws CommonException
+	 * @throws ClaimException 
+	 * @throws AilmentNotFoundException 
 	 */
 	@Override
-	public ClaimEntryOutput claimEntry(ClaimEntryInput claimEntryInput) throws CommonException {
+	public ClaimEntryOutput claimEntry(ClaimEntryInput claimEntryInput) throws ClaimException, AilmentNotFoundException   {
 
 		log.info(InsuranceClaimSystemConstants.CLAIM_ENTRY_SERVICE_STRAT);
 		Optional<Insurance> insuranceOptional = insuranceRepository.findById(claimEntryInput.getInsuranceNumber());
 		if (!insuranceOptional.isPresent())
-			throw new CommonException(InsuranceClaimSystemConstants.INVALID_INSURANCE_NUMBER);
+			throw new ClaimException(InsuranceClaimSystemConstants.INVALID_INSURANCE_NUMBER);
 		if (claimEntryInput.getAdmissionDate().isAfter(claimEntryInput.getDischargeDate()))
-			throw new CommonException(InsuranceClaimSystemConstants.INVALID_DATE_RANGE);
+			throw new ClaimException(InsuranceClaimSystemConstants.INVALID_DATE_RANGE);
 		if (claimEntryInput.getTotalClaimAmount() < 0)
-			throw new CommonException(InsuranceClaimSystemConstants.INVALID_DETAILS);
+			throw new ClaimException(InsuranceClaimSystemConstants.INVALID_CLAIM_AMOUNT);
 		Optional<Ailment> ailmentOptional = ailmentRepository.findByNatureOfAilment(claimEntryInput.getAilmentNature());
 		if (!ailmentOptional.isPresent()) {
-			throw new CommonException(InsuranceClaimSystemConstants.AILMENT_NOT_FOUND);
+			throw new AilmentNotFoundException(InsuranceClaimSystemConstants.AILMENT_NOT_FOUND);
 		}
-		Optional<HospitalDetail> hospitalDetail = hospitalDetailRepository
+		Optional<Hospital> hospitalDetail = hospitalDetailRepository
 				.findByHospitalName(claimEntryInput.getHospitalName());
-		Double amout = claimEntryInput.getTotalClaimAmount();
+		Double amount = claimEntryInput.getTotalClaimAmount();
 		if (hospitalDetail.isPresent()) {
-			amout = amout * (InsuranceClaimSystemConstants.NETWORK_HOSPITAL_PERCENTAGE);
+			amount = amount * (InsuranceClaimSystemConstants.NETWORK_HOSPITAL_PERCENTAGE);
 		} else {
-			amout = amout * (InsuranceClaimSystemConstants.OTHER_HOSPITAL_PERCENTAGE);
+			amount = amount * (InsuranceClaimSystemConstants.OTHER_HOSPITAL_PERCENTAGE);
 		}
 
-		claimEntryInput.setTotalClaimAmount(amout);
+		claimEntryInput.setTotalClaimAmount(amount);
 		Claim claim = new Claim();
 		BeanUtils.copyProperties(claimEntryInput, claim);
 		claim.setClaimDate(LocalDateTime.now());
 		claim.setClaimStatus(InsuranceClaimSystemConstants.CLAIM_PENDING);
 		claimRepository.save(claim);
-
-		// claim details entry
 		ClaimDetail claimDetail = new ClaimDetail();
 		claimDetail.setApprovalDate(LocalDateTime.now());
 		claimDetail.setApprovalStatus(InsuranceClaimSystemConstants.CLAIM_PENDING);
 		claimDetail.setClaimId(claim.getClaimId());
 		claimDetailRepository.save(claimDetail);
-
 		ClaimEntryOutput claimEntryOutput = new ClaimEntryOutput();
 		claimEntryOutput.setClaimId(claim.getClaimId());
 		claimEntryOutput.setMessage(CLAIM_ENTRY_SUCCSES);

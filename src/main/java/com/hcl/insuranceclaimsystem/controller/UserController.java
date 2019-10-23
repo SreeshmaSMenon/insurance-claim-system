@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hcl.insuranceclaimsystem.dto.ClaimApproveRequest;
 import com.hcl.insuranceclaimsystem.dto.CommonResponse;
 import com.hcl.insuranceclaimsystem.entity.ClaimDetail;
+import com.hcl.insuranceclaimsystem.exception.ClaimsNotFoundException;
 import com.hcl.insuranceclaimsystem.exception.UserException;
 import com.hcl.insuranceclaimsystem.exception.UserNotFoundException;
 import com.hcl.insuranceclaimsystem.service.UserService;
@@ -27,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class contains method for user operations
+ * 
  * @author Sreeshma S Menon
  * @see 2019/10/21
  *
@@ -36,33 +38,39 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/users")
 @CrossOrigin(allowedHeaders = { "*", "*/" }, origins = { "*", "*/" })
 public class UserController {
-	
+
 	@Autowired
 	UserService userService;
 
 	/**
-	  * This method will call respective service layer method in order to approve given claim.
-	  * @param claimApproveRequest
-	  * @param bindingResult
-	  * @param userId
-	  * @return ResponseEntity<CommonResponse>
-	  * @throws UserException
-	  * @throws UserNotFoundException 
-	  */
+	 * This method will call respective service layer method in order to approve
+	 * given claim.
+	 * 
+	 * @param claimApproveRequest
+	 * @param bindingResult
+	 * @param userId
+	 * @return ResponseEntity<CommonResponse>
+	 * @throws UserException
+	 * @throws UserNotFoundException
+	 * @throws ClaimsNotFoundException
+	 */
 	@PutMapping("/{userId}/claims")
-	 public ResponseEntity<CommonResponse> approveClaim(@Valid @RequestBody ClaimApproveRequest claimApproveRequest,@PathVariable("userId") Integer userId,BindingResult bindingResult) throws UserException, UserNotFoundException{
-		 log.info(InsuranceClaimSystemConstants.APPROVE_DEBUG_START_CONTROLLER);
-		 if(bindingResult.hasErrors()) {
-			 throw new UserException(bindingResult.getFieldError().getField() + " " + bindingResult.getFieldError().getDefaultMessage());
-		 }
-		 CommonResponse commonResponse=new CommonResponse();
-		 Optional<ClaimDetail>claimDetailOptional= userService.approveClaim(userId,claimApproveRequest);
-		 if(claimDetailOptional.isPresent()){
-			 commonResponse.setStatusCode(HttpStatus.OK.value());
-			 commonResponse.setStatusMessage(InsuranceClaimSystemConstants.SUCCESS);
-		 }
-		 log.info(InsuranceClaimSystemConstants.APPROVE_DEBUG_END_CONTROLLER);
-		 return new ResponseEntity<>(commonResponse,HttpStatus.OK);
-	 }
+	public ResponseEntity<CommonResponse> approveClaim(@Valid @RequestBody ClaimApproveRequest claimApproveRequest,
+			@PathVariable("userId") Integer userId, BindingResult bindingResult)
+			throws UserException, UserNotFoundException, ClaimsNotFoundException {
+		log.info(InsuranceClaimSystemConstants.APPROVE_INFO_START_CONTROLLER);
+		if (bindingResult.hasErrors()) {
+			throw new UserException(bindingResult.getFieldError().getField() + InsuranceClaimSystemConstants.SEPERATOR
+					+ bindingResult.getFieldError().getDefaultMessage());
+		}
+		CommonResponse commonResponse = new CommonResponse();
+		Optional<ClaimDetail> claimDetailOptional = userService.approveClaim(userId, claimApproveRequest);
+		if (claimDetailOptional.isPresent()) {
+			commonResponse.setStatusCode(HttpStatus.OK.value());
+			commonResponse.setStatusMessage(InsuranceClaimSystemConstants.SUCCESS);
+		}
+		log.info(InsuranceClaimSystemConstants.APPROVE_INFO_END_CONTROLLER);
+		return new ResponseEntity<>(commonResponse, HttpStatus.OK);
+	}
 
 }

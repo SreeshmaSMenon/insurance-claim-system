@@ -19,18 +19,25 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	@ExceptionHandler(UserException.class)
-	public ResponseEntity<ErrorResponse> bindExceptionHandler(UserException exception, WebRequest request) {
-
+	public ResponseEntity<ErrorResponse> userExceptionHandler(UserException exception, WebRequest request) {
 		ErrorResponse errorResponse = new ErrorResponse(exception.getMessage(), HttpStatus.BAD_REQUEST.value(),
+				request.getDescription(false));
+		return new ResponseEntity<>(errorResponse, HttpStatus.OK);
+
+	}
+	@ExceptionHandler(HospitalNotFoundException.class)
+	public ResponseEntity<ErrorResponse> hospitalNotFoundExceptionHandler(HospitalNotFoundException exception, WebRequest request) {
+		ErrorResponse errorResponse = new ErrorResponse(exception.getMessage(), HttpStatus.NOT_FOUND.value(),
 				request.getDescription(false));
 		return new ResponseEntity<>(errorResponse, HttpStatus.OK);
 
 	}
 
 
+
 	@ExceptionHandler(UserNotFoundException.class)
 	public ResponseEntity<ErrorResponse> bindExceptionHandler(UserNotFoundException exception, WebRequest request) {
-		ErrorResponse errorResponse = new ErrorResponse(exception.getMessage(), HttpStatus.BAD_REQUEST.value(),
+		ErrorResponse errorResponse = new ErrorResponse(exception.getMessage(), HttpStatus.NOT_FOUND.value(),
 				request.getDescription(false));
 		return new ResponseEntity<>(errorResponse, HttpStatus.OK);
 	}

@@ -1,34 +1,27 @@
 package com.hcl.insuranceclaimsystem.controller;
 
-import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import com.hcl.insuranceclaimsystem.dto.ClaimDetailsResponse;
-import com.hcl.insuranceclaimsystem.dto.HospitalDetail;
-import com.hcl.insuranceclaimsystem.exception.AilmentNotFoundException;
-import com.hcl.insuranceclaimsystem.exception.ClaimException;
-import com.hcl.insuranceclaimsystem.exception.ClaimsNotFoundException;
-import com.hcl.insuranceclaimsystem.exception.HospitalNotFoundException;
-import com.hcl.insuranceclaimsystem.exception.UserNotFoundException;
-import com.hcl.insuranceclaimsystem.service.ClaimService;
-import com.hcl.insuranceclaimsystem.util.InsuranceClaimSystemConstants;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import com.hcl.insuranceclaimsystem.dto.ClaimEntryInput;
 import com.hcl.insuranceclaimsystem.dto.ClaimEntryOutput;
 import com.hcl.insuranceclaimsystem.dto.CommonResponse;
-
+import com.hcl.insuranceclaimsystem.exception.AilmentNotFoundException;
+import com.hcl.insuranceclaimsystem.exception.ClaimException;
+import com.hcl.insuranceclaimsystem.exception.ClaimsNotFoundException;
+import com.hcl.insuranceclaimsystem.service.ClaimService;
+import com.hcl.insuranceclaimsystem.util.InsuranceClaimSystemConstants;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * This class contains have the method for get List of claims by the userId.
+ * Controller to handle the request and response for claims operations.
  * 
  * @author KiruthikaK
  * @author Sairam
@@ -37,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/claims")
 @CrossOrigin(allowedHeaders = { "*", "*/" }, origins = { "*", "*/" })
 public class ClaimController {
 
@@ -45,54 +38,16 @@ public class ClaimController {
 	ClaimService claimService;
 
 	/**
-	 * This method used for get list of claims based on the userId.
+	 * Method to call service to track the status of the given claim.
 	 * 
-	 * @param userId
-	 * @return List<ClaimResponse>
-	 * @throws ClaimsNotFoundException
-	 * @throws UserNotFoundException
+	 * @param claimId this is the id of claim for which status to be return.
+	 * @return String which is the current status of claim.
+	 * @throws ClaimsNotFoundException will throw if requested claim not found.
 	 */
-	@GetMapping("/users/{userId}/claims")
-	public ResponseEntity<List<ClaimDetailsResponse>> getClaims(@PathVariable Integer userId)
-			throws ClaimsNotFoundException, UserNotFoundException {
-		log.info(InsuranceClaimSystemConstants.CLAIM_INFO_START_CONTROLLER);
-		Optional<List<ClaimDetailsResponse>> claimResponses = claimService.getClaims(userId);
-		if (!claimResponses.isPresent()) {
-			throw new ClaimsNotFoundException(InsuranceClaimSystemConstants.CLAIM_LIST_EMPTY);
-		}
-		log.info(InsuranceClaimSystemConstants.CLAIM_INFO_END_CONTROLLER);
-		return new ResponseEntity<>(claimResponses.get(), HttpStatus.OK);
-
-	}
-
-	/**
-	 * This method for get all the hospitalDetails.
-	 * 
-	 * @return List<HospitalDetails>
-	 * @throws HospitalNotFoundException 
-	 * @throws CommonException
-	 */
-	@GetMapping("/hospitals")
-	public ResponseEntity<List<HospitalDetail>> getAllHospitals() throws HospitalNotFoundException  {
-		log.info(InsuranceClaimSystemConstants.GET_HOSPITAL_INFO_START_CONTROLLER);
-		Optional<List<HospitalDetail>> hospitalDetails = claimService.getAllHospitals();
-		if (!hospitalDetails.isPresent()) {
-			throw new HospitalNotFoundException(InsuranceClaimSystemConstants.HOSPITAL_NOT_FOUND);
-		}
-		log.info(InsuranceClaimSystemConstants.GET_HOSPITAL_INFO_END_CONTROLLER);
-		return new ResponseEntity<>(hospitalDetails.get(), HttpStatus.OK);
-	}
-
-	/**
-	 * This method for track the status for the particular claim.
-	 * 
-	 * @param claimId
-	 * @return String
-	 */
-	@GetMapping("/claims/{claimId}/status")
-	public ResponseEntity<CommonResponse> trackClaim(@PathVariable Integer claimId) {
+	@GetMapping("/{claimId}/status")
+	public ResponseEntity<CommonResponse> trackClaim(@PathVariable Integer claimId) throws ClaimsNotFoundException {
 		log.info(InsuranceClaimSystemConstants.TRACK_STATUS_INFO_START_CONTROLLER);
-		CommonResponse commonResponse=new CommonResponse();
+		CommonResponse commonResponse = new CommonResponse();
 		String status = claimService.trackClaim(claimId);
 		commonResponse.setStatusCode(HttpStatus.OK.value());
 		commonResponse.setStatusMessage(status);
@@ -101,16 +56,16 @@ public class ClaimController {
 	}
 
 	/**
-	 * claimEntry is create the clime with required details
-	 * 
-	 * @param claimEntryInput
-	 * @return ClaimEntryOutput
-	 * @throws AilmentNotFoundException 
-	 * @throws ClaimException 
+	 * Method to call service to create a claim entry with given details.
+	 * @param claimEntryInput which includes details required to create claim entry.
+	 * @return ClaimEntryOutput which includes response details for the created claim entry.
+	 * @throws AilmentNotFoundException will throw if ailment for the given claim is not present.
+	 * @throws ClaimException will throw if given policy number is invalid, if given claim amount
+	 *         is invalid, if given admission and discharge date range is invalid.
 	 */
-	@PostMapping(value = "/claims")
-	public ResponseEntity<ClaimEntryOutput> claimEntry(@RequestBody ClaimEntryInput claimEntryInput) throws ClaimException, AilmentNotFoundException
-			 {
+	@PostMapping(value = "/")
+	public ResponseEntity<ClaimEntryOutput> claimEntry(@RequestBody ClaimEntryInput claimEntryInput)
+			throws ClaimException, AilmentNotFoundException {
 		log.info(InsuranceClaimSystemConstants.CLAIM_ENTRY_CONTROLLER_STRAT);
 		return ResponseEntity.status(HttpStatus.OK).body(claimService.claimEntry(claimEntryInput));
 	}

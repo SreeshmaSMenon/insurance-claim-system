@@ -16,6 +16,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
 import com.hcl.insuranceclaimsystem.dto.AilmentData;
 import com.hcl.insuranceclaimsystem.dto.AilmentResponse;
+import com.hcl.insuranceclaimsystem.exception.AilmentNotFoundException;
 import com.hcl.insuranceclaimsystem.service.AilmentService;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -36,8 +37,8 @@ public class AilmentControllerTest {
     }
     
     @Test
-    public void testGetAllAilment() {
-    	Mockito.when(ailmentService.getAllAilment()).thenReturn(Optional.of(ailmentList));
+    public void testGetAllAilment() throws AilmentNotFoundException {
+       Mockito.when(ailmentService.getAllAilment()).thenReturn(Optional.of(ailmentList));
  	   ResponseEntity<AilmentResponse> ailmentResponse=ailmentController.getAllAilments();
  	   assertNotNull(ailmentResponse);
     }

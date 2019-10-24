@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,10 +17,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
+
 import com.hcl.insuranceclaimsystem.dto.ClaimDetailsResponse;
 import com.hcl.insuranceclaimsystem.dto.ClaimEntryInput;
 import com.hcl.insuranceclaimsystem.dto.ClaimEntryOutput;
-import com.hcl.insuranceclaimsystem.dto.HospitalDetail;
 import com.hcl.insuranceclaimsystem.entity.Ailment;
 import com.hcl.insuranceclaimsystem.entity.Claim;
 import com.hcl.insuranceclaimsystem.entity.ClaimDetail;
@@ -29,7 +30,7 @@ import com.hcl.insuranceclaimsystem.entity.Role;
 import com.hcl.insuranceclaimsystem.entity.User;
 import com.hcl.insuranceclaimsystem.exception.AilmentNotFoundException;
 import com.hcl.insuranceclaimsystem.exception.ClaimException;
-import com.hcl.insuranceclaimsystem.exception.UserNotFoundException;
+import com.hcl.insuranceclaimsystem.exception.ClaimsNotFoundException;
 import com.hcl.insuranceclaimsystem.repository.AilmentRepository;
 import com.hcl.insuranceclaimsystem.repository.ClaimDetailRepository;
 import com.hcl.insuranceclaimsystem.repository.ClaimRepository;
@@ -55,14 +56,12 @@ public class ClaimServiceImplTest {
 	AilmentRepository ailmentRepository;
 	Insurance insurance;
 	ClaimEntryInput claimEntryInput;
-	Integer userId;
 	List<ClaimDetailsResponse> claimResponses;
 	ClaimDetailsResponse claimResponse;
 	User user;
 	Role role;
 	Claim claim;
 	List<Claim> claims;
-	String userRole;
 	Integer claimId;
 	ClaimDetail claimDetail;
 	String status;
@@ -73,7 +72,6 @@ public class ClaimServiceImplTest {
 
 	@Before
 	public void setup() {
-		userId = 1;
 		claimResponse = new ClaimDetailsResponse();
 		claimResponse.setClaimId(1);
 		claimResponses = new ArrayList<>();
@@ -84,7 +82,6 @@ public class ClaimServiceImplTest {
 		role = new Role();
 		role.setRoleName("FIRST_LEVEL_APPROVER");
 		role.setRoleId(1);
-		userRole = "FIRST_LEVEL_APPROVER";
 		insurance = new Insurance();
 		insurance.setAddress("address");
 		insurance.setCustomerName("Name");
@@ -130,43 +127,11 @@ public class ClaimServiceImplTest {
 
 	}
 
-	@Test
-	public void testGetClaims() throws UserNotFoundException {
-		Mockito.when(userRepository.getUserRole(userId)).thenReturn(Optional.of(userRole));
-		Optional<List<ClaimDetailsResponse>> claimResponses = claimServiceImpl.getClaims(userId);
-		assertNotNull(claimResponses);
-	}
 
-	
-	@Test
-	public void testGetClaimsSecondLevelApprover() throws UserNotFoundException {
-		userId = 2;
-		user.setUserId(userId);
-		user.setRoleId(2);
-		userRole = "SECOND_LEVEL_APPROVER";
-		claim.setClaimStatus("SECOND_LEVEL_APPROVED");
-		claims.add(claim);
-		Mockito.when(userRepository.getUserRole(userId)).thenReturn(Optional.of(userRole));
-		Optional<List<ClaimDetailsResponse>> claimResponses = claimServiceImpl.getClaims(userId);
-		assertNotNull(claimResponses);
-	}
 
-	@Test(expected = UserNotFoundException.class)
-	public void testExpectedUserNotFoundException() throws UserNotFoundException {
-		Mockito.when(userRepository.getUserRole(userId)).thenReturn(Optional.empty());
-		Optional<List<ClaimDetailsResponse>> claimResponses = claimServiceImpl.getClaims(userId);
-		Assert.assertEquals(claims.get(0).getClaimId(), claimResponses.get().get(0).getClaimId());
-	}
 
 	@Test
-	public void testGetAllHospitalDetails() {
-		Mockito.when(hospitalDetailRepository.findAll()).thenReturn(details);
-		Optional<List<HospitalDetail>> hospitalDetailsList = claimServiceImpl.getAllHospitals();
-		Assert.assertNotNull(hospitalDetailsList);
-	}
-
-	@Test
-	public void testTrackClaim() {
+	public void testTrackClaim() throws ClaimsNotFoundException {
 		claim.setClaimStatus("PENDING");
 		Mockito.when(claimRepository.findById(claimId)).thenReturn(Optional.of(claim));
 		String actualStatus = claimServiceImpl.trackClaim(claimId);

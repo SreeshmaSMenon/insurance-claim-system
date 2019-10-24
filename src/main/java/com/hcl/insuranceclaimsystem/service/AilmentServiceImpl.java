@@ -24,15 +24,19 @@ public class AilmentServiceImpl implements AilmentService {
 	AilmentRepository ailmentRepository;
 
 	/**
-	 * This method will retrieve all the ailment available from database.
+	 * Method to retrieve all the ailment available from repository.
 	 * 
-	 * @return Optional<List<AilmentData>>
+	 * @return List of AilmentData 
 	 */
 	@Override
 	public Optional<List<AilmentData>> getAllAilment() {
 		log.info(InsuranceClaimSystemConstants.AILMENT_INFO_START_SERVICE);
 		List<AilmentData> ailmentList = new ArrayList<>();
 		List<Ailment> ailmentDetails = ailmentRepository.findAll();
+		AilmentData ailmentData1 = new AilmentData();
+		ailmentData1.setLabel("");
+		ailmentData1.setValue("");
+		ailmentList.add(ailmentData1);
 		ailmentDetails.forEach(ailmentDetail -> {
 			AilmentData ailmentData = new AilmentData();
 			ailmentData.setLabel(ailmentDetail.getNatureOfAilment());

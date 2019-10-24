@@ -1,12 +1,13 @@
 package com.hcl.insuranceclaimsystem.repository;
-/**
- * Interface for generic CRUD operations on a repository for Ailment.
- * @author Sreeshma S Menon
- */
+
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import com.hcl.insuranceclaimsystem.entity.Ailment;
+/**
+ * Repository for generic CRUD operations for Ailment.
+ * @author Sreeshma S Menon
+ */
 @Repository
 public interface AilmentRepository extends JpaRepository<Ailment, Integer> {
 	/**

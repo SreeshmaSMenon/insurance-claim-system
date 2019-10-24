@@ -2,7 +2,6 @@ package com.hcl.insuranceclaimsystem.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,15 +16,12 @@ import com.hcl.insuranceclaimsystem.dto.ClaimDetailsResponse;
 import com.hcl.insuranceclaimsystem.dto.ClaimEntryInput;
 import com.hcl.insuranceclaimsystem.dto.ClaimEntryOutput;
 import com.hcl.insuranceclaimsystem.dto.CommonResponse;
-import com.hcl.insuranceclaimsystem.dto.HospitalDetail;
 import com.hcl.insuranceclaimsystem.entity.Claim;
 import com.hcl.insuranceclaimsystem.entity.Role;
 import com.hcl.insuranceclaimsystem.entity.User;
 import com.hcl.insuranceclaimsystem.exception.AilmentNotFoundException;
 import com.hcl.insuranceclaimsystem.exception.ClaimException;
 import com.hcl.insuranceclaimsystem.exception.ClaimsNotFoundException;
-import com.hcl.insuranceclaimsystem.exception.HospitalNotFoundException;
-import com.hcl.insuranceclaimsystem.exception.UserNotFoundException;
 import com.hcl.insuranceclaimsystem.service.ClaimService;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -42,10 +38,7 @@ public class ClaimControllerTest {
 	Role role;
 	Claim claim;
 	Integer claimId;
-	HospitalDetail hospitalDetail;
-	List<HospitalDetail> hospitalDetails;
 	List<String> statusList;
-
 	ClaimEntryInput claimEntryInput;
 	ClaimEntryOutput claimEntryOutput;
 	CommonResponse commonResponse;
@@ -69,12 +62,8 @@ public class ClaimControllerTest {
 		claim = new Claim();
 		claim.setClaimId(1);
 		claim.setClaimStatus("PENDING");
-		hospitalDetail = new HospitalDetail();
-		hospitalDetails = new ArrayList<>();
-		hospitalDetails.add(hospitalDetail);
 		claimId = 1;
 		statusList = new ArrayList<>();
-
 		claimEntryInput = new ClaimEntryInput();
 		claimEntryInput.setAdmissionDate(claim.getAdmissionDate());
 		claimEntryInput.setAilmentNature("hart");
@@ -86,41 +75,7 @@ public class ClaimControllerTest {
 	}
 
 	@Test
-	public void testGetClaims() throws UserNotFoundException, ClaimsNotFoundException {
-		Mockito.when(claimService.getClaims(Mockito.anyInt())).thenReturn(Optional.of(claimResponses));
-		ResponseEntity<List<ClaimDetailsResponse>> actual = claimController.getClaims(Mockito.anyInt());
-		ResponseEntity<List<ClaimDetailsResponse>> expected = new ResponseEntity<>(Optional.of(claimResponses).get(),
-				HttpStatus.OK);
-		Assert.assertEquals(expected.getStatusCodeValue(), actual.getStatusCodeValue());
-	}
-
-	@Test(expected = ClaimsNotFoundException.class)
-	public void testExpectedClaimsNotFoundException() throws UserNotFoundException, ClaimsNotFoundException {
-		Mockito.when(claimService.getClaims(Mockito.anyInt())).thenReturn(Optional.empty());
-		ResponseEntity<List<ClaimDetailsResponse>> actual = claimController.getClaims(Mockito.anyInt());
-		ResponseEntity<List<ClaimDetailsResponse>> expected = new ResponseEntity<>(Optional.of(claimResponses).get(),
-				HttpStatus.OK);
-		Assert.assertEquals(expected.getStatusCodeValue(), actual.getStatusCodeValue());
-	}
-
-	@Test
-	public void testGetAllHospitalDetails() throws HospitalNotFoundException {
-		Mockito.when(claimService.getAllHospitals()).thenReturn(Optional.of(hospitalDetails));
-		ResponseEntity<List<HospitalDetail>> actual = claimController.getAllHospitals();
-		ResponseEntity<List<HospitalDetail>> expected = new ResponseEntity<>(hospitalDetails, HttpStatus.OK);
-		Assert.assertEquals(expected.getStatusCodeValue(), actual.getStatusCodeValue());
-	}
-
-	@Test(expected = HospitalNotFoundException.class)
-	public void testExpectedCommonException() throws HospitalNotFoundException {
-		Mockito.when(claimService.getAllHospitals()).thenReturn(Optional.empty());
-		ResponseEntity<List<HospitalDetail>> actual = claimController.getAllHospitals();
-		ResponseEntity<List<HospitalDetail>> expected = new ResponseEntity<>(hospitalDetails, HttpStatus.OK);
-		Assert.assertEquals(expected.getStatusCodeValue(), actual.getStatusCodeValue());
-	}
-
-	@Test
-	public void testtrackClaim() {
+	public void testtrackClaim() throws ClaimsNotFoundException {
 		Mockito.when(claimService.trackClaim(claimId)).thenReturn("PENDING");
 		ResponseEntity<CommonResponse> actual = claimController.trackClaim(claimId);
 		ResponseEntity<CommonResponse> expected = new ResponseEntity<>(commonResponse, HttpStatus.OK);

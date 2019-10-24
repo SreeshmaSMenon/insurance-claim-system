@@ -3,6 +3,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.Before;
@@ -12,7 +13,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import com.hcl.insuranceclaimsystem.dto.ClaimApproveRequest;
+import com.hcl.insuranceclaimsystem.dto.ClaimDetailsResponse;
 import com.hcl.insuranceclaimsystem.entity.Claim;
 import com.hcl.insuranceclaimsystem.entity.ClaimDetail;
 import com.hcl.insuranceclaimsystem.exception.ClaimsNotFoundException;
@@ -122,5 +125,27 @@ public class UserServiceTest {
 		Optional<ClaimDetail>claimDetailOptional=userServiceImpl.approveClaim(1, claimApproveRequest);
 		assertNotNull(claimDetailOptional);
 	}
+
+	@Test
+	public void testGetClaims() throws UserNotFoundException {
+		Mockito.when(userRepository.getUserRole(1)).thenReturn(Optional.of("FIRST_LEVEL_APPROVER"));
+		Optional<List<ClaimDetailsResponse>> claimResponses = userServiceImpl.getClaims(1);
+		assertNotNull(claimResponses);
+	}
+
 	
+	@Test
+	public void testGetClaimsSecondLevelApprover() throws UserNotFoundException {
+		Mockito.when(userRepository.getUserRole(2)).thenReturn(Optional.of("SECOND_LEVEL_APPROVER"));
+		Optional<List<ClaimDetailsResponse>> claimResponses = userServiceImpl.getClaims(2);
+		assertNotNull(claimResponses);
+	}
+	
+	@Test(expected = UserNotFoundException.class)
+	public void testExpectedUserNotFoundException() throws UserNotFoundException {
+		Mockito.when(userRepository.getUserRole(1)).thenReturn(Optional.empty());
+		Optional<List<ClaimDetailsResponse>> claimResponses = userServiceImpl.getClaims(1);
+		assertNotNull(claimResponses);
+	}
+
 }

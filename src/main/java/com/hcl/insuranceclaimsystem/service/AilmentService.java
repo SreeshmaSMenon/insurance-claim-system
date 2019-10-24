@@ -14,7 +14,7 @@ import com.hcl.insuranceclaimsystem.dto.AilmentData;
 public interface AilmentService {
 	/**
 	 * Retrieve all ailments.
-	 * @return List of AilmentData.
+	 * @return List of AilmentData which is optional and includes all ailment types.
 	 */
 	public Optional<List<AilmentData>> getAllAilment();
 }

@@ -35,7 +35,7 @@ public class LoginController {
 	@Autowired
 	LoginService loginService;
 	/**
-	 * Method to login to the application if proper credentials found.
+	 * Method to login to the application if proper credentials found otherwise throw UserNotFoundException.
 	 * @param loginRequest which includes the credentials details for login.
 	 * @param bindingResult Which includes Request body parameters.
 	 * @throws UserException will throw if the parameters of bindingResult is empty or null.

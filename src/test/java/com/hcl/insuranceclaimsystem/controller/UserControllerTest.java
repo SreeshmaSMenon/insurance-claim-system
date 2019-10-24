@@ -4,8 +4,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,11 +16,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
 import com.hcl.insuranceclaimsystem.dto.ClaimApproveRequest;
+import com.hcl.insuranceclaimsystem.dto.ClaimDetailsResponse;
 import com.hcl.insuranceclaimsystem.dto.CommonResponse;
 import com.hcl.insuranceclaimsystem.entity.ClaimDetail;
 import com.hcl.insuranceclaimsystem.exception.ClaimsNotFoundException;
@@ -35,6 +40,8 @@ public class UserControllerTest {
 	FieldError fieldError;
 	ClaimApproveRequest claimApproveRequest;
 	ClaimDetail claimDetail;
+	List<ClaimDetailsResponse> claimResponses;
+	ClaimDetailsResponse claimResponse;
 
 	@Before
 	public void setup() {
@@ -49,6 +56,10 @@ public class UserControllerTest {
 		claimDetail.setApprovalStatus("Approved");
 		claimDetail.setClaimId(1);
 		claimDetail.setComments("Approved by first level");
+		claimResponse = new ClaimDetailsResponse();
+		claimResponse.setClaimId(1);
+		claimResponses = new ArrayList<>();
+		claimResponses.add(claimResponse);
 	}
 
 	@Test
@@ -68,4 +79,23 @@ public class UserControllerTest {
 				bindingResult);
 		assertNotNull(commonResponse);
 	}
+	@Test
+	public void testGetClaims() throws UserNotFoundException, ClaimsNotFoundException {
+		Mockito.when(userService.getClaims(Mockito.anyInt())).thenReturn(Optional.of(claimResponses));
+		ResponseEntity<List<ClaimDetailsResponse>> actual = userController.getClaims(Mockito.anyInt());
+		ResponseEntity<List<ClaimDetailsResponse>> expected = new ResponseEntity<>(Optional.of(claimResponses).get(),
+				HttpStatus.OK);
+		Assert.assertEquals(expected.getStatusCodeValue(), actual.getStatusCodeValue());
+	}
+
+	@Test(expected = ClaimsNotFoundException.class)
+	public void testExpectedClaimsNotFoundException() throws UserNotFoundException, ClaimsNotFoundException {
+		List<ClaimDetailsResponse> details=new ArrayList<>();
+		Mockito.when(userService.getClaims(Mockito.anyInt())).thenReturn(Optional.of(details));
+		ResponseEntity<List<ClaimDetailsResponse>> actual = userController.getClaims(Mockito.anyInt());
+		ResponseEntity<List<ClaimDetailsResponse>> expected = new ResponseEntity<>(Optional.of(claimResponses).get(),
+				HttpStatus.OK);
+		Assert.assertEquals(expected.getStatusCodeValue(), actual.getStatusCodeValue());
+	}
+
 }

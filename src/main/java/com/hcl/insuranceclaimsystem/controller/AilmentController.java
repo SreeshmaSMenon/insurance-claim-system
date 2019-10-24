@@ -13,14 +13,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hcl.insuranceclaimsystem.dto.AilmentData;
 import com.hcl.insuranceclaimsystem.dto.AilmentResponse;
+import com.hcl.insuranceclaimsystem.exception.AilmentNotFoundException;
 import com.hcl.insuranceclaimsystem.service.AilmentService;
 import com.hcl.insuranceclaimsystem.util.InsuranceClaimSystemConstants;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * This class contains method for ailment operations.
+ * Controller for handling the requests and responses to retrieve aliments.
+ * 
  * @author Sreeshma S Menon
- * @see 2019/10/21
+ * @since 2019/10/21
  *
  */
 @Slf4j
@@ -33,19 +35,24 @@ public class AilmentController {
 	AilmentService ailmentService;
 
 	/**
-	 * This method will retrieve all the ailment available from database. 
-	 * @return AilmentResponse
+	 * Method to call service method to retrieve ailments, if empty list found will
+	 * throw AilmentNotFoundException.
+	 * 
+	 * @return AilmentResponse which consist of status message and ailment list.
+	 * @throws AilmentNotFoundException will throw if empty list of ailments from
+	 *                                  service.
 	 */
 	@GetMapping("/")
-	public ResponseEntity<AilmentResponse> getAllAilments() {
+	public ResponseEntity<AilmentResponse> getAllAilments() throws AilmentNotFoundException {
 		log.info(InsuranceClaimSystemConstants.AILMENT_INFO_START_CONTROLLER);
 		Optional<List<AilmentData>> ailmentListOptional = ailmentService.getAllAilment();
-		AilmentResponse ailmentResponse = new AilmentResponse();
-		if (ailmentListOptional.isPresent()) {
-			ailmentResponse.setStatusCode(HttpStatus.OK.value());
-			ailmentResponse.setStatusMessage(InsuranceClaimSystemConstants.SUCCESS);
-			ailmentResponse.setAilmentList(ailmentListOptional.get());
+		if (!ailmentListOptional.isPresent()) {
+			throw new AilmentNotFoundException(InsuranceClaimSystemConstants.AILMENT_NOT_FOUND);
 		}
+		AilmentResponse ailmentResponse = new AilmentResponse();
+		ailmentResponse.setStatusCode(HttpStatus.OK.value());
+		ailmentResponse.setStatusMessage(InsuranceClaimSystemConstants.SUCCESS);
+		ailmentResponse.setAilmentList(ailmentListOptional.get());
 		log.info(InsuranceClaimSystemConstants.AILMENT_INFO_END_CONTROLLER);
 		return new ResponseEntity<>(ailmentResponse, HttpStatus.OK);
 	}

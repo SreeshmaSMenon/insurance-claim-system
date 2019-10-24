@@ -3,8 +3,6 @@ package com.hcl.insuranceclaimsystem.service;
 import static com.hcl.insuranceclaimsystem.util.InsuranceClaimSystemConstants.CLAIM_ENTRY_SUCCSES;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -14,10 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.hcl.insuranceclaimsystem.dto.ClaimDetailsResponse;
 import com.hcl.insuranceclaimsystem.dto.ClaimEntryInput;
 import com.hcl.insuranceclaimsystem.dto.ClaimEntryOutput;
-import com.hcl.insuranceclaimsystem.dto.HospitalDetail;
 import com.hcl.insuranceclaimsystem.entity.Ailment;
 import com.hcl.insuranceclaimsystem.entity.Claim;
 import com.hcl.insuranceclaimsystem.entity.ClaimDetail;
@@ -25,7 +21,7 @@ import com.hcl.insuranceclaimsystem.entity.Hospital;
 import com.hcl.insuranceclaimsystem.entity.Insurance;
 import com.hcl.insuranceclaimsystem.exception.AilmentNotFoundException;
 import com.hcl.insuranceclaimsystem.exception.ClaimException;
-import com.hcl.insuranceclaimsystem.exception.UserNotFoundException;
+import com.hcl.insuranceclaimsystem.exception.ClaimsNotFoundException;
 import com.hcl.insuranceclaimsystem.repository.AilmentRepository;
 import com.hcl.insuranceclaimsystem.repository.ClaimDetailRepository;
 import com.hcl.insuranceclaimsystem.repository.ClaimRepository;
@@ -37,7 +33,7 @@ import com.hcl.insuranceclaimsystem.util.InsuranceClaimSystemConstants;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * This class contains the method for get list of claims based on the userId.
+ * Implementation of ClaimService for claim operations.
  * 
  * @author KiruthikaK
  * @author sairam
@@ -52,92 +48,45 @@ public class ClaimServiceImpl implements ClaimService {
 	@Autowired
 	UserRepository userRepository;
 	@Autowired
-	HospitalDetailRepository hospitalDetailRepository;
-	@Autowired
 	ClaimDetailRepository claimDetailRepository;
 	@Autowired
 	InsuranceRepository insuranceRepository;
 	@Autowired
 	AilmentRepository ailmentRepository;
+	@Autowired
+	HospitalDetailRepository hospitalDetailRepository;
 
 	/**
-	 * This method for get the all claims for the login user based on the roles.
-	 * 
-	 * @param userId
-	 * @return Optional<List<ClaimResponse>>
-	 * @throws UserNotFoundException
-	 */
-	@Transactional
-	public Optional<List<ClaimDetailsResponse>> getClaims(Integer userId) throws UserNotFoundException {
-		log.info(InsuranceClaimSystemConstants.CLAIM_INFO_START_SERVICE);
-		Optional<String> role = userRepository.getUserRole(userId);
-		if (!role.isPresent()) {
-			throw new UserNotFoundException(InsuranceClaimSystemConstants.USER_NOT_FOUND);
-		}
-		List<ClaimDetailsResponse> claimResponses = new ArrayList<>();
-		List<Claim> claims = new ArrayList<>();
-		if (role.get().equalsIgnoreCase(InsuranceClaimSystemConstants.FIRST_LEVEL_APPROVER)) {
-			claims = claimRepository.findByClaimStatus(InsuranceClaimSystemConstants.PENDING);
-		} else if (role.get().equalsIgnoreCase(InsuranceClaimSystemConstants.SECOND_LEVEL_APPROVER)) {
-			claims = claimRepository.findByClaimStatus(InsuranceClaimSystemConstants.FIRST_LEVEL_APPROVED);
-		}
-		claims.stream().forEach(claim -> {
-			ClaimDetailsResponse claimResponse = new ClaimDetailsResponse();
-			BeanUtils.copyProperties(claim, claimResponse);
-			claimResponses.add(claimResponse);
-		});
-		log.info(InsuranceClaimSystemConstants.CLAIM_INFO_END_SERVICE);
-		return Optional.of(claimResponses);
-	}
-
-	/**
-	 * This Method for get all the Hospital details With in the network.
-	 * 
-	 * @return List<HospitalDetail>
-	 */
-	@Transactional
-	public Optional<List<HospitalDetail>> getAllHospitals() {
-		log.info(InsuranceClaimSystemConstants.GET_HOSPITAL_INFO_START_SERVICE);
-		List<Hospital> details = hospitalDetailRepository.findAll();
-		List<HospitalDetail> hospitalDetailsList = new ArrayList<>();
-		details.stream().forEach(detail -> {
-			HospitalDetail hospitalDetail = new HospitalDetail();
-			hospitalDetail.setLabel(detail.getHospitalName());
-			hospitalDetail.setValue(detail.getHospitalName());
-			hospitalDetailsList.add(hospitalDetail);
-		});
-		log.info(InsuranceClaimSystemConstants.GET_HOSPITAL_INFO_END_SERVICE);
-		return Optional.of(hospitalDetailsList);
-	}
-
-	/**
-	 * This method for track the status for particular claim based on the claimId.
-	 * 
-	 * @param claimId
-	 * @return string
-	 */
-	@Transactional
-	public String trackClaim(Integer claimId) {
-		log.info(InsuranceClaimSystemConstants.TRACK_STATUS_INFO_START_SERVICE);
-		Optional<Claim> claim = claimRepository.findById(claimId);
-		String status = null;
-		if (claim.isPresent()) {
-			status = claim.get().getClaimStatus();
-		}
-		log.info(InsuranceClaimSystemConstants.TRACK_STATUS_INFO_END_SERVICE);
-		return status;
-	}
-
-	/**
-	 * claim entry will create the claim with required details
-	 * 
-	 * @param ClaimEntryInput
-	 * @return ClaimEntryOutput
-	 * @throws ClaimException 
-	 * @throws AilmentNotFoundException 
+	 * Method to track the status of the given claim.
+	 * @param claimId this is the id of claim for which status to be return.
+	 * @return String which is the current status of claim.
+	 * @throws ClaimsNotFoundException will throw if requested claim not found.
 	 */
 	@Override
-	public ClaimEntryOutput claimEntry(ClaimEntryInput claimEntryInput) throws ClaimException, AilmentNotFoundException   {
+	public String trackClaim(Integer claimId) throws ClaimsNotFoundException {
+		log.info(InsuranceClaimSystemConstants.TRACK_STATUS_INFO_START_SERVICE);
+		Optional<Claim> claim = claimRepository.findById(claimId);
+		if (!claim.isPresent()) {
+			throw new ClaimsNotFoundException(InsuranceClaimSystemConstants.CLAIM_NOT_FOUND);
+		}
+
+		log.info(InsuranceClaimSystemConstants.TRACK_STATUS_INFO_END_SERVICE);
+		return claim.get().getClaimStatus();
+	}
+
+	/**
+	 * Service Implementation method to create a claim entry with given details .
+	 * @param claimEntryInput which includes details required to create claim entry.
+	 * @return ClaimEntryOutput which includes response details for the created claim entry.
+	 * @throws AilmentNotFoundException will throw if ailment for the given claim is not present.
+	 * @throws ClaimException           will throw if given policy number is
+	 *                                  invalid, if given claim amount is invalid,
+	 *                                  if given admission and discharge date range
+	 *                                  is invalid.
+	 */
+	@Transactional
+	public ClaimEntryOutput claimEntry(ClaimEntryInput claimEntryInput)
+			throws ClaimException, AilmentNotFoundException {
 
 		log.info(InsuranceClaimSystemConstants.CLAIM_ENTRY_SERVICE_STRAT);
 		Optional<Insurance> insuranceOptional = insuranceRepository.findById(claimEntryInput.getInsuranceNumber());
